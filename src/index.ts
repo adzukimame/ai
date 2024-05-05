@@ -55,7 +55,7 @@ promiseRetry(retry => {
 			i: config.i
 		},
 		headers: {
-			"User-Agent": `Misskey-Ai/v${pkg._v}`
+			'User-Agent': `Misskey-Ai/v${pkg._v}`
 		}
 	}).catch(retry);
 }, {

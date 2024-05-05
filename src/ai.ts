@@ -391,7 +391,7 @@ export default class 藍 {
 				i: config.i
 			}, param),
 			headers: {
-				"User-Agent": `Misskey-Ai/v${pkg._v}`
+				'User-Agent': `Misskey-Ai/v${pkg._v}`
 			}
 		});
 	};
