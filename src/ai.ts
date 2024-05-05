@@ -136,6 +136,9 @@ export default class 藍 {
 		// Init stream
 		this.connection = new Stream();
 
+		// start heartbeat
+		setInterval(this.connection.heartbeat, 1000 * 60);
+
 		//#region Main stream
 		const mainStream = this.connection.useSharedConnection('main');
 
