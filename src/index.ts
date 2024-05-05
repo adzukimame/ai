@@ -59,7 +59,9 @@ promiseRetry(retry => {
 		}
 	}).catch(retry);
 }, {
-	retries: 3
+	retries: 20,
+	minTimeout: 5 * 1000,
+	maxTimeout: 180 * 1000
 }).then(account => {
 	const acct = `@${account.username}`;
 	log(chalk.green(`Account fetched successfully: ${chalk.underline(acct)}`));
