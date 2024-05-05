@@ -144,6 +144,10 @@ export default class Stream extends EventEmitter {
 		this.stream.send(JSON.stringify(data));
 	}
 
+	public heartbeat() {
+		this.stream.send('h');
+	}
+
 	/**
 	 * Close this connection
 	 */
