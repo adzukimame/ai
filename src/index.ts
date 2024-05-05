@@ -53,6 +53,9 @@ promiseRetry(retry => {
 	return request.post(`${config.apiUrl}/i`, {
 		json: {
 			i: config.i
+		},
+		headers: {
+			"User-Agent": `Misskey-Ai/v${pkg._v}`
 		}
 	}).catch(retry);
 }, {

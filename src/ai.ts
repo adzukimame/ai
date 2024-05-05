@@ -386,7 +386,10 @@ export default class 藍 {
 		return request.post(`${config.apiUrl}/${endpoint}`, {
 			json: Object.assign({
 				i: config.i
-			}, param)
+			}, param),
+			headers: {
+				"User-Agent": `Misskey-Ai/v${pkg._v}`
+			}
 		});
 	};
 
