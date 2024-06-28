@@ -13,6 +13,7 @@ import Module from '@/module.js';
 import Message from '@/message.js';
 import Friend, { FriendDoc } from '@/friend.js';
 import type { User } from '@/misskey/user.js';
+import type { Note } from '@/misskey/note.js';
 import Stream from '@/stream.js';
 import log from '@/utils/log.js';
 import { sleep } from './utils/sleep.js';
@@ -364,7 +365,7 @@ export default class 藍 {
 	 */
 	@bindThis
 	public async post(param: any) {
-		const res = await this.api('notes/create', param);
+		const res = await this.api('notes/create', param) as { createdNote: Note };
 		return res.createdNote;
 	}
 

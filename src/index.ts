@@ -5,6 +5,8 @@ import chalk from 'chalk';
 import got from 'got';
 import promiseRetry from 'promise-retry';
 
+import type { User } from '@/misskey/user.js';
+
 import 藍 from './ai.js';
 import config from './config.js';
 import _log from './utils/log.js';
@@ -64,7 +66,7 @@ promiseRetry(retry => {
 		headers: {
 			'User-Agent': `Misskey-Ai/v${pkg._v}`
 		}
-	}).json().catch(retry);
+	}).json<User>().catch(retry);
 }, {
 	retries: 20,
 	minTimeout: 5 * 1000,

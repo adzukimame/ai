@@ -5,6 +5,7 @@ import Message from '@/message.js';
 import serifs, { getSerif } from '@/serifs.js';
 import { acct } from '@/utils/acct.js';
 import config from '@/config.js';
+import { Response as GotResponse } from 'got';
 
 const NOTIFY_INTERVAL = 1000 * 60 * 60 * 12;
 
@@ -149,7 +150,7 @@ export default class extends Module {
 			});
 		} catch (err) {
 			// renote対象が消されていたらリマインダー解除
-			if (err.statusCode === 400) {
+			if ((err as GotResponse).statusCode === 400) {
 				this.unsubscribeReply(remind.thing == null && remind.quoteId ? remind.quoteId : remind.id);
 				this.reminds.remove(remind);
 				return;
