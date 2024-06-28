@@ -11,6 +11,7 @@ import * as Reversi from './engine.js';
 import config from '@/config.js';
 import serifs from '@/serifs.js';
 import type { User } from '@/misskey/user.js';
+import type { Note } from '@/misskey/note.js';
 
 function getUserName(user) {
 	return user.name || user.username;
@@ -454,7 +455,7 @@ class Session {
 			try {
 				const res = await got.post(`${config.host}/api/notes/create`, {
 					json: body
-				}).json();
+				}).json() as { createdNote: Note };
 
 				return res.createdNote;
 			} catch (e) {

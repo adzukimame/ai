@@ -6,6 +6,49 @@ import { renderChart } from './render-chart.js';
 import { items } from '@/vocabulary.js';
 import config from '@/config.js';
 
+type UserNotesChart = {
+	diffs: {
+		normal: number[],
+		reply: number[],
+		renote: number[],
+		withFile: number[],
+	},
+};
+
+type UserFollowingChartItem = {
+	total: number[],
+	inc: number[],
+	dec: number[],
+};
+
+type UserFollowingChart = {
+	local: {
+		followings: UserFollowingChartItem,
+		followers: UserFollowingChartItem,
+	},
+	remote: {
+		followings: UserFollowingChartItem,
+		followers: UserFollowingChartItem,
+	},
+};
+
+type NotesChartItem = {
+	total: number[],
+	inc: number[],
+	dec: number[],
+	diffs: {
+		normal: number[],
+		reply: number[],
+		renote: number[],
+		withFile: number[],
+	},
+};
+
+type NotesChart = {
+	local: NotesChartItem,
+	remote: NotesChartItem,
+};
+
 export default class extends Module {
 	public readonly name = 'chart';
 
@@ -52,7 +95,7 @@ export default class extends Module {
 				span: 'day',
 				limit: 30,
 				userId: params.user.id
-			});
+			}) as UserNotesChart;
 
 			chart = {
 				title: `@${params.user.username}さんの投稿数`,
@@ -69,7 +112,7 @@ export default class extends Module {
 				span: 'day',
 				limit: 30,
 				userId: params.user.id
-			});
+			}) as UserFollowingChart;
 
 			chart = {
 				title: `@${params.user.username}さんのフォロワー数`,
@@ -83,7 +126,7 @@ export default class extends Module {
 			const data = await this.ai.api('charts/notes', {
 				span: 'day',
 				limit: 30,
-			});
+			}) as NotesChart;
 
 			chart = {
 				datasets: [{
