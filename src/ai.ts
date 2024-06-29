@@ -394,6 +394,11 @@ export default class 藍 {
 	 */
 	@bindThis
 	public sendMessage(userId: any, param: any) {
+		const friend = this.lookupFriend(userId);
+		if (!friend || friend.doc.user.followersCount === 0) {
+			return;
+		}
+
 		return this.post(Object.assign({
 			visibility: 'specified',
 			visibleUserIds: [userId],
