@@ -1,0 +1,30 @@
+name: Test (production build)
+
+on:
+  push:
+    branches:
+      - master
+      - develop-mame
+  pull_request:
+
+env:
+  NODE_ENV: production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.13.1]
+
+    steps:
+    - uses: actions/checkout@v4.1.1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4.0.2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - run: cp config.example.json config.json
+    - name: Build
+      run: npm run build
