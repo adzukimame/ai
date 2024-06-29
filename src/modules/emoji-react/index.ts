@@ -25,6 +25,7 @@ export default class extends Module {
 		if (note.reply != null) return;
 		if (note.text == null) return;
 		if (note.text.includes('@')) return; // (自分または他人問わず)メンションっぽかったらreject
+		if (note.userId === this.ai.account.id) return; // 自分自身はreject
 
 		const react = async (reaction: string, immediate = false) => {
 			if (!immediate) {
@@ -36,7 +37,7 @@ export default class extends Module {
 			});
 		};
 
-		const customEmojis = note.text.match(/:([^\n:]+?):/g);
+		const customEmojis = note.text.match(/:([\w+-]+?):/g);
 		if (customEmojis) {
 			// カスタム絵文字が複数種類ある場合はキャンセル
 			if (!customEmojis.every((val, i, arr) => val === arr[0])) return;
