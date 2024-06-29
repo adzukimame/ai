@@ -1,0 +1,15 @@
+{
+	"host": "http://localhost:3000",
+	"i": "xxxxxxxx",
+	"master": "admin",
+	"notingEnabled": true,
+	"keywordEnabled": true,
+	"chartEnabled": true,
+	"reversiEnabled": true,
+	"serverMonitoring": true,
+	"checkEmojisEnabled": true,
+	"checkEmojisAtOnce": true,
+	"mecab": "/usr/bin/mecab",
+	"mecabDic": "/var/lib/mecab/dic/juman-utf8",
+	"memoryDir": "."
+}

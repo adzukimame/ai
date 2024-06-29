@@ -25,5 +25,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
+    - run: cp config.example.json config.json
     - name: Build
       run: npm run build
