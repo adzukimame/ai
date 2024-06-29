@@ -18,6 +18,18 @@ export type FriendDoc = {
 	reversiStrength?: number | null;
 };
 
+function formatUser(value: User): User {
+	return {
+		id: value.id,
+		name: value.name,
+		username: value.username,
+		host: value.host,
+		isFollowing: value.isFollowing,
+		isBot: value.isBot,
+		followersCount: value.followersCount,
+	};
+}
+
 export default class Friend {
 	private ai: 藍;
 
@@ -50,7 +62,7 @@ export default class Friend {
 			if (exist == null) {
 				const inserted = this.ai.friends.insertOne({
 					userId: opts.user.id,
-					user: opts.user
+					user: formatUser(opts.user)
 				});
 
 				if (inserted == null) {
@@ -60,7 +72,7 @@ export default class Friend {
 				this.doc = inserted;
 			} else {
 				this.doc = exist;
-				this.doc.user = { ...this.doc.user, ...opts.user };
+				this.doc.user = formatUser({ ...this.doc.user, ...opts.user });
 				this.save();
 			}
 		} else if (opts.doc) {
@@ -72,10 +84,10 @@ export default class Friend {
 
 	@bindThis
 	public updateUser(user: Partial<User>) {
-		this.doc.user = {
+		this.doc.user = formatUser({
 			...this.doc.user,
 			...user,
-		};
+		});
 		this.save();
 	}
 

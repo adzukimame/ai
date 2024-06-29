@@ -5,6 +5,7 @@ type Config = {
 	master?: string;
 	wsUrl: string;
 	apiUrl: string;
+	restrictCommunication: boolean;
 	keywordEnabled: boolean;
 	reversiEnabled: boolean;
 	notingEnabled: boolean;

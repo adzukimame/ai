@@ -168,6 +168,14 @@ export default class 藍 {
 			if (data.userId == this.account.id) return; // 自分は弾く
 			if (data.text == null && (data.files || []).length == 0) return;
 
+			if (data.user.isBot) {
+				return;
+			}
+
+			if (config.restrictCommunication && data.user.host != null) {
+				return;
+			}
+
 			// リアクションする
 			this.api('notes/reactions/create', {
 				noteId: data.id,
@@ -220,6 +228,14 @@ export default class 藍 {
 		// To avoid infinity reply loop.
 		if (msg.user.isBot) {
 			return;
+		}
+
+		// コミュニケーション対象の制限が有効
+		if (config.restrictCommunication) {
+			// フォロワー0のリモートユーザー
+			if (msg.user.host != null && msg.friend.doc.user.followersCount === 0) {
+				return;
+			}
 		}
 
 		const isNoContext = msg.replyId == null;
