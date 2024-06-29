@@ -297,7 +297,7 @@ export default class 藍 {
 
 	@bindThis
 	private onNotification(notification: any) {
-		if (notification.user.isBot) {
+		if (notification.user?.isBot) {
 			return;
 		}
 
@@ -307,6 +307,23 @@ export default class 藍 {
 			case 'reaction': {
 				const friend = new Friend(this, { user: notification.user });
 				friend.incLove(0.1);
+				break;
+			}
+
+			case 'receiveFollowRequest': {
+				if (config.restrictCommunication) {
+					this.api('users/show', { userId: notification.user.id }).then(_user => {
+						const user = _user as User;
+
+						// フォロワー0のリモートユーザー
+						if (user.host != null && user.followersCount === 0) {
+							this.api('following/requests/reject', { userId: user.id });
+						}
+						else {
+							this.api('following/requests/accept', { userId: user.id });
+						}
+					});
+				}
 				break;
 			}
 
