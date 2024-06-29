@@ -281,6 +281,10 @@ export default class 藍 {
 
 	@bindThis
 	private onNotification(notification: any) {
+		if (notification.user.isBot) {
+			return;
+		}
+
 		switch (notification.type) {
 			// リアクションされたら親愛度を少し上げる
 			// TODO: リアクション取り消しをよしなにハンドリングする
