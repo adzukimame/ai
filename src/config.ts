@@ -13,6 +13,7 @@ type Config = {
 	serverMonitoring: boolean;
 	checkEmojisEnabled?: boolean;
 	checkEmojisAtOnce?: boolean;
+	mazeEnabled?: boolean;
 	mecab?: string;
 	mecabDic?: string;
 	memoryDir?: string;
