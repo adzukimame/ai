@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { bindThis } from '@/decorators.js';
 import loki from 'lokijs';
 import Module from '@/module.js';
@@ -29,6 +30,8 @@ export default class extends Module {
 			indices: ['userId']
 		});
 
+		this.learn();
+
 		setInterval(this.learn, 1000 * 60 * 60);
 
 		return {};
@@ -36,20 +39,34 @@ export default class extends Module {
 
 	@bindThis
 	private async learn() {
-		const tl = await this.ai.api('notes/local-timeline', {
-			limit: 30
-		}) as Note[];
+		const tl = (await Promise.all([
+			this.ai.api('notes/local-timeline', {
+				limit: 30,
+				withRenotes: false,
+			}),
+			this.ai.api('notes/timeline', {
+				limit: 30,
+				withRenotes: false,
+			}),
+		]) as Note[][]).flat();
 
 		const interestedNotes = tl.filter(note =>
 			note.userId !== this.ai.account.id &&
 			note.text != null &&
-			note.cw == null);
+			note.cw == null &&
+			note.visibility != 'followers' && 
+			note.visibility != 'specified');
 
 		let keywords: string[][] = [];
 
+		let jaEnDic: string | undefined = undefined;
+		try {
+			jaEnDic = readFileSync(`${import.meta.dirname}/../../../google-ime-user-dictionary-ja-en.txt`).toString();
+		} catch {}
+
 		for (const note of interestedNotes) {
 			const tokens = await mecab(note.text as string, config.mecab, config.mecabDic);
-			const keywordsInThisNote = tokens.filter(token => token[2] == '固有名詞' && token[8] != null);
+			const keywordsInThisNote = tokens.filter(token => token[2] == '固有名詞' && (token[8] != null || (jaEnDic !== undefined && new RegExp(`^([^\\t]+)\\t${ token[0] }(?=\\t)`, 'im').test(jaEnDic))));
 			keywords = keywords.concat(keywordsInThisNote);
 		}
 
@@ -72,7 +89,9 @@ export default class extends Module {
 				learnedAt: Date.now()
 			});
 
-			text = serifs.keyword.learned(keyword[0], kanaToHira(keyword[8]));
+			text = serifs.keyword.learned(keyword[0], kanaToHira(
+				keyword[8] ?? new RegExp(`^([^\\t]+)\\t${ keyword[0] }(?=\\t)`, 'im').exec(jaEnDic!)![1]
+			));
 		}
 
 		this.ai.post({
