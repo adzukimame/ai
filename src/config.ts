@@ -14,6 +14,7 @@ type Config = {
 	checkEmojisEnabled?: boolean;
 	checkEmojisAtOnce?: boolean;
 	mazeEnabled?: boolean;
+	pollEnabled?: boolean;
 	mecab?: string;
 	mecabDic?: string;
 	memoryDir?: string;

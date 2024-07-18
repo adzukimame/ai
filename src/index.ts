@@ -100,7 +100,7 @@ promiseRetry(retry => {
 		...(config.chartEnabled ? [new ChartModule()] : []),
 		new SleepReportModule(),
 		...(config.notingEnabled ? [new NotingModule()] : []),
-		new PollModule(),
+		...(config.pollEnabled ? [new PollModule()] : []),
 		new ReminderModule(),
 		...(config.checkEmojisEnabled ? [new CheckCustomEmojisModule()] : []),
 	]);
