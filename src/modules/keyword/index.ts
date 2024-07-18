@@ -68,7 +68,10 @@ export default class extends Module {
 			keywords = keywords.concat(keywordsInThisNote);
 		}
 
-		if (keywords.length === 0) return;
+		if (keywords.length === 0) {
+			this.log('No keywords found.')
+			return;
+		}
 
 		const rnd = Math.floor((1 - Math.sqrt(Math.random())) * keywords.length);
 		const keyword = keywords.sort((a, b) => a[0].length < b[0].length ? 1 : -1)[rnd];
@@ -79,9 +82,14 @@ export default class extends Module {
 
 		let text: string;
 
+		this.log(`Picked keyword: ${keyword[0]}`);
+
 		if (exist) {
+			this.log(`Already learned.`);
 			return;
 		} else {
+			this.log('Learning...');
+
 			this.learnedKeywords.insertOne({
 				keyword: keyword[0],
 				learnedAt: Date.now()
