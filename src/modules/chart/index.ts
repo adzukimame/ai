@@ -1,3 +1,4 @@
+import type { DriveFilesCreateResponse } from 'misskey-js/entities.js';
 import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
@@ -85,7 +86,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async genChart(type, params?): Promise<any> {
+	private async genChart(type, params?): Promise<DriveFilesCreateResponse> {
 		this.log('Chart data fetching...');
 
 		let chart;

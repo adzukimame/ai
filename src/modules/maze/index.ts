@@ -1,3 +1,4 @@
+import type { DriveFilesCreateResponse } from 'misskey-js/entities.js';
 import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
@@ -42,7 +43,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async genMazeFile(seed, size?): Promise<any> {
+	private async genMazeFile(seed, size?): Promise<DriveFilesCreateResponse> {
 		this.log('Maze generating...');
 		const maze = genMaze(seed, size);
 

@@ -2,10 +2,9 @@
 
 import process from 'node:process';
 import chalk from 'chalk';
-import got from 'got';
 import promiseRetry from 'promise-retry';
 
-import type { User } from '@/misskey/user.js';
+import { api as misskeyApi } from 'misskey-js';
 
 import 藍 from './ai.js';
 import config from './config.js';
@@ -55,18 +54,16 @@ process.on('uncaughtException', err => {
 	} catch { }
 });
 
+const apiClient = new misskeyApi.APIClient({
+	origin: config.host,
+	credential: config.i,
+});
+
 promiseRetry(retry => {
 	log(`Account fetching... ${chalk.gray(config.host)}`);
 
 	// アカウントをフェッチ
-	return got.post(`${config.apiUrl}/i`, {
-		json: {
-			i: config.i
-		},
-		headers: {
-			'User-Agent': `Misskey-Ai/v${pkg._v}`
-		}
-	}).json<User>().catch(retry);
+	return apiClient.request('i', {}).catch(retry);
 }, {
 	retries: 20,
 	minTimeout: 5 * 1000,

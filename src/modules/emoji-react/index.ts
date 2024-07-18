@@ -1,20 +1,20 @@
 import { bindThis } from '@/decorators.js';
 import { parse } from 'twemoji-parser';
 
-import type { Note } from '@/misskey/note.js';
+import type { Channels, ChannelConnection } from 'misskey-js';
+import type { Note } from 'misskey-js/entities.js';
 import Module from '@/module.js';
-import Stream from '@/stream.js';
 import includes from '@/utils/includes.js';
 import { sleep } from '@/utils/sleep.js';
 
 export default class extends Module {
 	public readonly name = 'emoji-react';
 
-	private htl: ReturnType<Stream['useSharedConnection']>;
+	private htl: ChannelConnection<Channels['homeTimeline']>;
 
 	@bindThis
 	public install() {
-		this.htl = this.ai.connection.useSharedConnection('homeTimeline');
+		this.htl = this.ai.connection.useChannel('homeTimeline', { withRenotes: false });
 		this.htl.on('note', this.onNote);
 
 		return {};
@@ -34,7 +34,7 @@ export default class extends Module {
 			this.ai.api('notes/reactions/create', {
 				noteId: note.id,
 				reaction: reaction
-			});
+			}).catch();
 		};
 
 		const customEmojis = note.text.match(/:([\w+-]+?):/g);

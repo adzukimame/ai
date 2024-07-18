@@ -4,7 +4,7 @@ import Module from '@/module.js';
 import serifs from '@/serifs.js';
 import { genItem } from '@/vocabulary.js';
 import config from '@/config.js';
-import type { Note } from '@/misskey/note.js';
+import type { Note } from 'misskey-js/entities.js';
 
 export default class extends Module {
 	public readonly name = 'poll';
@@ -104,7 +104,7 @@ export default class extends Module {
 
 	@bindThis
 	private async timeoutCallback({ title, noteId }) {
-		const note: Note = await this.ai.api('notes/show', { noteId }) as Note;
+		const note = await this.ai.api('notes/show', { noteId });
 
 		const choices = note.poll!.choices;
 

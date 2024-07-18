@@ -3,18 +3,18 @@
 import * as fs from 'fs';
 import { bindThis } from '@/decorators.js';
 import loki from 'lokijs';
-import got from 'got';
 import { FormData, File } from 'formdata-node';
 import chalk from 'chalk';
 import { v4 as uuid } from 'uuid';
+import WebSocket from 'ws';
+import { api as misskeyApi, Stream } from 'misskey-js';
+import type { Endpoints as MisskeyApiEndpoints } from 'misskey-js';
+import type { MeDetailed, User, UserDetailed, Note, Notification, DriveFilesCreateResponse } from 'misskey-js/entities.js';
 
 import config from '@/config.js';
 import Module from '@/module.js';
 import Message from '@/message.js';
 import Friend, { FriendDoc } from '@/friend.js';
-import type { User } from '@/misskey/user.js';
-import type { Note } from '@/misskey/note.js';
-import Stream from '@/stream.js';
 import log from '@/utils/log.js';
 import { sleep } from './utils/sleep.js';
 import pkg from '../package.json' assert { type: 'json' };
@@ -43,7 +43,7 @@ export type Meta = {
  */
 export default class 藍 {
 	public readonly version = pkg._v;
-	public account: User;
+	public account: MeDetailed;
 	public connection: Stream;
 	public modules: Module[] = [];
 	private mentionHooks: MentionHook[] = [];
@@ -51,6 +51,7 @@ export default class 藍 {
 	private timeoutCallbacks: { [moduleName: string]: TimeoutCallback } = {};
 	public db: loki;
 	public lastSleepedAt: number;
+	private apiClient: misskeyApi.APIClient;
 
 	private meta: loki.Collection<Meta>;
 
@@ -78,9 +79,14 @@ export default class 藍 {
 	 * @param account 藍として使うアカウント
 	 * @param modules モジュール。先頭のモジュールほど高優先度
 	 */
-	constructor(account: User, modules: Module[]) {
+	constructor(account: MeDetailed, modules: Module[]) {
 		this.account = account;
 		this.modules = modules;
+
+		this.apiClient = new misskeyApi.APIClient({
+			origin: config.host,
+			credential: config.i,
+		});
 
 		let memoryDir = '.';
 		if (config.memoryDir) {
@@ -136,13 +142,13 @@ export default class 藍 {
 		this.lastSleepedAt = meta.lastWakingAt;
 
 		// Init stream
-		this.connection = new Stream();
+		this.connection = new Stream(config.host, { token: config.i }, { WebSocket: WebSocket });
 
 		// start heartbeat
 		setInterval(this.connection.heartbeat, 1000 * 60);
 
 		//#region Main stream
-		const mainStream = this.connection.useSharedConnection('main');
+		const mainStream = this.connection.useChannel('main');
 
 		// メンションされたとき
 		mainStream.on('mention', async data => {
@@ -181,12 +187,6 @@ export default class 藍 {
 				noteId: data.id,
 				reaction: 'love'
 			});
-		});
-
-		// メッセージ
-		mainStream.on('messagingMessage', data => {
-			if (data.userId == this.account.id) return; // 自分は弾く
-			this.onReceiveMessage(new Message(this, data));
 		});
 
 		// 通知
@@ -296,24 +296,24 @@ export default class 藍 {
 	}
 
 	@bindThis
-	private onNotification(notification: any) {
-		if (notification.user?.isBot) {
-			return;
-		}
-
+	private onNotification(notification: Notification) {
 		switch (notification.type) {
 			// リアクションされたら親愛度を少し上げる
 			// TODO: リアクション取り消しをよしなにハンドリングする
 			case 'reaction': {
+				if (notification.user.isBot) break;
+
 				const friend = new Friend(this, { user: notification.user });
 				friend.incLove(0.1);
 				break;
 			}
 
 			case 'receiveFollowRequest': {
+				if (notification.user.isBot) break;
+
 				if (config.restrictCommunication) {
 					this.api('users/show', { userId: notification.user.id }).then(_user => {
-						const user = _user as User;
+						const user = _user as UserDetailed;
 
 						// フォロワー0のリモートユーザー
 						if (user.host != null && user.followersCount === 0) {
@@ -385,24 +385,29 @@ export default class 藍 {
 	 * ファイルをドライブにアップロードします
 	 */
 	@bindThis
-	public async upload(file: Buffer | fs.ReadStream, meta: { filename: string, contentType: string }) {
+	public async upload(file: Buffer | fs.ReadStream, meta: { filename: string, contentType: string }): Promise<DriveFilesCreateResponse> {
 		const form = new FormData();
 		form.set('i', config.i);
 		form.set('file', new File([file], meta.filename, { type: meta.contentType }));
 
-		const res = await got.post({
-			url: `${config.apiUrl}/drive/files/create`,
-			body: form
-		}).json();
-		return res;
+		return fetch(`${config.apiUrl}/drive/files/create`, {
+			method: 'POST',
+			body: form,
+		}).then(res => {
+			if (res.ok) {
+				return res.json();
+			} else {
+				throw res;
+			}
+		});
 	}
 
 	/**
 	 * 投稿します
 	 */
 	@bindThis
-	public async post(param: any) {
-		const res = await this.api('notes/create', param) as { createdNote: Note };
+	public async post(param: MisskeyApiEndpoints['notes/create']['req']): Promise<Note> {
+		const res = await this.api('notes/create', param);
 		return res.createdNote;
 	}
 
@@ -410,7 +415,7 @@ export default class 藍 {
 	 * 指定ユーザーにトークメッセージを送信します
 	 */
 	@bindThis
-	public sendMessage(userId: any, param: any) {
+	public sendMessage(userId: User['id'], param: MisskeyApiEndpoints['notes/create']['req']) {
 		const friend = this.lookupFriend(userId);
 
 		if (!friend) return;
@@ -427,16 +432,10 @@ export default class 藍 {
 	 * APIを呼び出します
 	 */
 	@bindThis
-	public api(endpoint: string, param?: any) {
+	public api<E extends keyof Omit<MisskeyApiEndpoints, 'signup' | 'signup-pending' | 'signin'>>(endpoint: E, param: MisskeyApiEndpoints[E]['req']): Promise<E extends 'users/show' ? (UserDetailed | UserDetailed[]) : MisskeyApiEndpoints[E]['res']> {
 		this.log(`API: ${endpoint}`);
-		return got.post(`${config.apiUrl}/${endpoint}`, {
-			json: Object.assign({
-				i: config.i
-			}, param),
-			headers: {
-				'User-Agent': `Misskey-Ai/v${pkg._v}`
-			}
-		}).json();
+		
+	  return this.apiClient.request(endpoint as any, param) as any;
 	};
 
 	/**
