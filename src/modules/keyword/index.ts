@@ -4,7 +4,7 @@ import loki from 'lokijs';
 import Module from '@/module.js';
 import config from '@/config.js';
 import serifs from '@/serifs.js';
-import type { Note } from '@/misskey/note.js';
+import type { Note } from 'misskey-js/entities.js';
 import { mecab } from './mecab.js';
 
 function kanaToHira(str: string) {
@@ -46,7 +46,7 @@ export default class extends Module {
 				limit: 30,
 				withRenotes: false,
 			}),
-		]) as Note[][]).flat();
+		])).flat();
 
 		const interestedNotes = tl.filter(note =>
 			note.userId !== this.ai.account.id &&

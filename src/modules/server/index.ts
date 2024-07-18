@@ -2,25 +2,26 @@ import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
 import config from '@/config.js';
+import type { ServerStats } from 'misskey-js/entities.js';
 
 export default class extends Module {
 	public readonly name = 'server';
 
 	private connection?: any;
-	private recentStat: any;
+	private recentStat: ServerStats;
 	private warned = false;
 	private lastWarnedAt: number;
 
 	/**
 	 * 1秒毎のログ1分間分
 	 */
-	private statsLogs: any[] = [];
+	private statsLogs: ServerStats[] = [];
 
 	@bindThis
 	public install() {
 		if (!config.serverMonitoring) return {};
 
-		this.connection = this.ai.connection.useSharedConnection('serverStats');
+		this.connection = this.ai.connection.useChannel('serverStats');
 		this.connection.on('stats', this.onStats);
 
 		setInterval(() => {
@@ -39,7 +40,7 @@ export default class extends Module {
 	private check() {
 		const average = (arr) => arr.reduce((a, b) => a + b) / arr.length;
 
-		const cpuPercentages = this.statsLogs.map(s => s && (s.cpu_usage || s.cpu) * 100 || 0);
+		const cpuPercentages = this.statsLogs.map(s => s && s.cpu * 100 || 0);
 		const cpuPercentage = average(cpuPercentages);
 		if (cpuPercentage >= 70) {
 			this.warn();
@@ -49,7 +50,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async onStats(stats: any) {
+	private async onStats(stats: ServerStats) {
 		this.recentStat = stats;
 	}
 

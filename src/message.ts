@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import 藍 from '@/ai.js';
 import Friend from '@/friend.js';
-import type { User } from '@/misskey/user.js';
+import type { Note, UserDetailed } from 'misskey-js/entities.js';
 import includes from '@/utils/includes.js';
 import or from '@/utils/or.js';
 import config from '@/config.js';
@@ -11,29 +11,29 @@ import { sleep } from '@/utils/sleep.js';
 
 export default class Message {
 	private ai: 藍;
-	private note: any;
+	private note: Note;
 
-	public get id(): string {
+	public get id(): Note['id'] {
 		return this.note.id;
 	}
 
-	public get user(): User {
+	public get user(): Note['user'] {
 		return this.note.user;
 	}
 
-	public get userId(): string {
+	public get userId(): Note['userId'] {
 		return this.note.userId;
 	}
 
-	public get text(): string {
+	public get text(): Note['text'] {
 		return this.note.text;
 	}
 
-	public get quoteId(): string | null {
+	public get quoteId(): Note['renoteId'] {
 		return this.note.renoteId;
 	}
 
-	public get visibility(): string {
+	public get visibility(): Note['visibility'] {
 		return this.note.visibility;
 	}
 
@@ -42,19 +42,19 @@ export default class Message {
 	 */
 	public get extractedText(): string {
 		const host = new URL(config.host).host.replace(/\./g, '\\.');
-		return this.text
+		return this.text ? this.text
 			.replace(new RegExp(`^@${this.ai.account.username}@${host}\\s`, 'i'), '')
 			.replace(new RegExp(`^@${this.ai.account.username}\\s`, 'i'), '')
-			.trim();
+			.trim() : '';
 	}
 
-	public get replyId(): string {
+	public get replyId(): Note['replyId'] {
 		return this.note.replyId;
 	}
 
 	public friend: Friend;
 
-	constructor(ai: 藍, note: any) {
+	constructor(ai: 藍, note: Note) {
 		this.ai = ai;
 		this.note = note;
 
@@ -64,7 +64,7 @@ export default class Message {
 		this.ai.api('users/show', {
 			userId: this.userId
 		}).then(user => {
-			this.friend.updateUser(user as User);
+			this.friend.updateUser(user as UserDetailed);
 		});
 	}
 
@@ -97,11 +97,11 @@ export default class Message {
 
 	@bindThis
 	public includes(words: string[]): boolean {
-		return includes(this.text, words);
+		return this.text ? includes(this.text, words) : false;
 	}
 
 	@bindThis
 	public or(words: (string | RegExp)[]): boolean {
-		return or(this.text, words);
+		return this.text ? or(this.text, words) : false;
 	}
 }

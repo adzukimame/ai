@@ -6,12 +6,11 @@
  * 切断されてしまうので、別々のプロセスで行うようにします
  */
 
-import got from 'got';
+import { api as misskeyApi } from 'misskey-js';
+import type { UserLite, Note } from 'misskey-js/entities.js';
 import * as Reversi from './engine.js';
 import config from '@/config.js';
 import serifs from '@/serifs.js';
-import type { User } from '@/misskey/user.js';
-import type { Note } from '@/misskey/note.js';
 
 function getUserName(user) {
 	return user.name || user.username;
@@ -24,8 +23,13 @@ const titles = [
 	'先生', 'せんせい', 'センセイ', 'ｾﾝｾｲ'
 ];
 
+const apiClient = new misskeyApi.APIClient({
+	origin: config.host,
+	credential: config.i,
+});
+
 class Session {
-	private account: User;
+	private account: UserLite;
 	private game: any;
 	private form: any;
 	private engine: Reversi.Game;
@@ -56,9 +60,9 @@ class Session {
 	/**
 	 * 対局が開始したことを知らせた投稿
 	 */
-	private startedNote: any = null;
+	private startedNote: Note | null = null;
 
-	private get user(): User {
+	private get user(): UserLite {
 		return this.game.user1Id == this.account.id ? this.game.user2 : this.game.user1;
 	}
 
@@ -440,7 +444,7 @@ class Session {
 	 * Misskeyに投稿します
 	 * @param text 投稿内容
 	 */
-	private post = async (text: string, renote?: any) => {
+	private post = async (text: string, renote?: any): Promise<Note | null> => {
 		if (this.allowPost) {
 			const body = {
 				i: config.i,
@@ -453,9 +457,11 @@ class Session {
 			}
 
 			try {
-				const res = await got.post(`${config.host}/api/notes/create`, {
-					json: body
-				}).json() as { createdNote: Note };
+				const res = await apiClient.request('notes/create', {
+					text: text,
+					visibility: 'home',
+					...(renote ? { renoteId: renote.id } : {}),
+				});
 
 				return res.createdNote;
 			} catch (e) {

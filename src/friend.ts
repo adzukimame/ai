@@ -2,12 +2,14 @@ import { bindThis } from '@/decorators.js';
 import 藍 from '@/ai.js';
 import IModule from '@/module.js';
 import getDate from '@/utils/get-date.js';
-import type { User } from '@/misskey/user.js';
+import type { UserLite, UserDetailed } from 'misskey-js/entities.js';
 import { genItem } from '@/vocabulary.js';
+
+export type FriendDocUser = Pick<UserLite, 'id' | 'name' | 'username' | 'host' | 'isBot'> & Partial<Pick<UserDetailed, 'isFollowing' | 'followersCount' | 'birthday'>>;
 
 export type FriendDoc = {
 	userId: string;
-	user: User;
+	user: FriendDocUser;
 	name?: string | null;
 	love?: number;
 	lastLoveIncrementedAt?: string;
@@ -18,7 +20,7 @@ export type FriendDoc = {
 	reversiStrength?: number | null;
 };
 
-function formatUser(value: User): User {
+function formatUser(value: FriendDocUser & Partial<UserLite | UserDetailed>): FriendDocUser {
 	return {
 		id: value.id,
 		name: value.name,
@@ -27,6 +29,7 @@ function formatUser(value: User): User {
 		isFollowing: value.isFollowing,
 		isBot: value.isBot,
 		followersCount: value.followersCount,
+		birthday: value.birthday,
 	};
 }
 
@@ -51,7 +54,7 @@ export default class Friend {
 
 	public doc: FriendDoc;
 
-	constructor(ai: 藍, opts: { user?: User, doc?: FriendDoc }) {
+	constructor(ai: 藍, opts: { user?: UserLite | UserDetailed, doc?: FriendDoc }) {
 		this.ai = ai;
 
 		if (opts.user) {
@@ -83,7 +86,7 @@ export default class Friend {
 	}
 
 	@bindThis
-	public updateUser(user: Partial<User>) {
+	public updateUser(user: Partial<FriendDocUser | UserLite | UserDetailed>) {
 		this.doc.user = formatUser({
 			...this.doc.user,
 			...user,

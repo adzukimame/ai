@@ -5,7 +5,6 @@ import Message from '@/message.js';
 import serifs, { getSerif } from '@/serifs.js';
 import { acct } from '@/utils/acct.js';
 import config from '@/config.js';
-import { Response as GotResponse } from 'got';
 
 const NOTIFY_INTERVAL = 1000 * 60 * 60 * 12;
 
@@ -71,7 +70,7 @@ export default class extends Module {
 			id: msg.id,
 			userId: msg.userId,
 			thing: thing === '' ? null : thing,
-			quoteId: msg.quoteId,
+			quoteId: msg.quoteId ?? null,
 			times: 0,
 			createdAt: Date.now(),
 		});
@@ -150,7 +149,7 @@ export default class extends Module {
 			});
 		} catch (err) {
 			// renote対象が消されていたらリマインダー解除
-			if ((err as GotResponse).statusCode === 400) {
+			if ((err as any).code === 'NO_SUCH_RENOTE_TARGET') {
 				this.unsubscribeReply(remind.thing == null && remind.quoteId ? remind.quoteId : remind.id);
 				this.reminds.remove(remind);
 				return;
