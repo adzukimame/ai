@@ -11,6 +11,7 @@
 	"checkEmojisEnabled": true,
 	"checkEmojisAtOnce": true,
 	"mazeEnabled": true,
+	"pollEnabled": true,
 	"mecab": "/usr/bin/mecab",
 	"mecabDic": "/var/lib/mecab/dic/juman-utf8/",
 	"memoryDir": "."
