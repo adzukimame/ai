@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import 藍 from '@/ai.js';
 import Friend from '@/friend.js';
-import type { Note, UserDetailed } from 'misskey-js/entities.js';
+import type { Note, UserDetailed, DriveFile } from 'misskey-js/entities.js';
 import includes from '@/utils/includes.js';
 import or from '@/utils/or.js';
 import config from '@/config.js';
@@ -70,7 +70,7 @@ export default class Message {
 
 	@bindThis
 	public async reply(text: string | null, opts?: {
-		file?: any;
+		file?: DriveFile;
 		cw?: string;
 		renote?: string;
 		immediate?: boolean;

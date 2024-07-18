@@ -3,6 +3,12 @@ import Module from '@/module.js';
 import Message from '@/message.js';
 import serifs from '@/serifs.js';
 
+type TimeoutCallbackData =  {
+	msgId: Message['id'],
+	userId: Message['friend']['userId'],
+	time: string,
+};
+
 export default class extends Module {
 	public readonly name = 'timer';
 
@@ -50,13 +56,13 @@ export default class extends Module {
 			msgId: msg.id,
 			userId: msg.friend.userId,
 			time: str
-		});
+		} as TimeoutCallbackData);
 
 		return true;
 	}
 
 	@bindThis
-	private timeoutCallback(data) {
+	private timeoutCallback(data: TimeoutCallbackData) {
 		const friend = this.ai.lookupFriend(data.userId);
 		if (friend == null) return; // 処理の流れ上、実際にnullになることは無さそうだけど一応
 		const text = serifs.timer.notify(data.time, friend.name);

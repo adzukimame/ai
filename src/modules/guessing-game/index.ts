@@ -56,7 +56,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async contextHook(key: any, msg: Message) {
+	private async contextHook(key: string, msg: Message) {
 		if (msg.text == null) return;
 
 		const exist = this.guesses.findOne({

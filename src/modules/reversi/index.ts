@@ -14,6 +14,23 @@ import type { Connection } from 'misskey-js/streaming.js';
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
+// フォーム
+export type Form = [{
+	id: 'publish',
+	type: 'switch',
+	label: string,
+	value: boolean,
+}, {
+	id: 'strength',
+	type: 'radio',
+	label: string,
+	value: number,
+	items: {
+		label: string,
+		value: number,
+	}[]
+}];
+
 export default class extends Module {
 	public readonly name = 'reversi';
 
@@ -106,7 +123,7 @@ export default class extends Module {
 		});
 
 		// フォーム
-		const form = [{
+		const form: Form = [{
 			id: 'publish',
 			type: 'switch',
 			label: '藍が対局情報を投稿するのを許可',

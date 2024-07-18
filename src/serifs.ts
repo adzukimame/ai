@@ -2,17 +2,17 @@
 
 export default {
 	core: {
-		setNameOk: name => `わかりました。これからは${name}とお呼びしますね！`,
+		setNameOk: (name: string) => `わかりました。これからは${name}とお呼びしますね！`,
 
 		san: 'さん付けした方がいいですか？',
 
 		yesOrNo: '「はい」か「いいえ」しかわからないんです...',
 
-		hello: name => name ? `こんにちは、${name}♪` : `こんにちは♪`,
+		hello: (name: string | null | undefined) => name ? `こんにちは、${name}♪` : `こんにちは♪`,
 
-		helloNight: name => name ? `こんばんは、${name}♪` : `こんばんは♪`,
+		helloNight: (name: string | null | undefined) => name ? `こんばんは、${name}♪` : `こんばんは♪`,
 
-		goodMorning: (tension, name) => name ? `おはようございます、${name}！${tension}` : `おはようございます！${tension}`,
+		goodMorning: (tension: string, name: string | null | undefined) => name ? `おはようございます、${name}！${tension}` : `おはようございます！${tension}`,
 
 		/*
 		goodMorning: {
@@ -22,12 +22,12 @@ export default {
 		},
 */
 
-		goodNight: name => name ? `おやすみなさい、${name}！` : 'おやすみなさい！',
+		goodNight: (name: string | null | undefined) => name ? `おやすみなさい、${name}！` : 'おやすみなさい！',
 
-		omedeto: name => name ? `ありがとうございます、${name}♪` : 'ありがとうございます♪',
+		omedeto: (name: string | null | undefined) => name ? `ありがとうございます、${name}♪` : 'ありがとうございます♪',
 
 		erait: {
-			general: name => name ? [
+			general: (name: string | null | undefined) => name ? [
 				`${name}、今日もえらいです！`,
 				`${name}、今日もえらいですよ～♪`
 			] : [
@@ -35,7 +35,7 @@ export default {
 				`今日もえらいですよ～♪`
 			],
 
-			specify: (thing, name) => name ? [
+			specify: (thing: string, name: string | null | undefined) => name ? [
 				`${name}、${thing}てえらいです！`,
 				`${name}、${thing}てえらいですよ～♪`
 			] : [
@@ -43,7 +43,7 @@ export default {
 				`${thing}てえらいですよ～♪`
 			],
 
-			specify2: (thing, name) => name ? [
+			specify2: (thing: string, name: string | null | undefined) => name ? [
 				`${name}、${thing}でえらいです！`,
 				`${name}、${thing}でえらいですよ～♪`
 			] : [
@@ -53,7 +53,7 @@ export default {
 		},
 
 		okaeri: {
-			love: name => name ? [
+			love: (name: string | null | undefined) => name ? [
 				`おかえりなさい、${name}♪`,
 				`おかえりなさいませっ、${name}っ。`
 			] : [
@@ -61,15 +61,15 @@ export default {
 				'おかえりなさいませっ、ご主人様っ。'
 			],
 
-			love2: name => name ? `おかえりなさいませ♡♡♡${name}っっ♡♡♡♡♡` : 'おかえりなさいませ♡♡♡ご主人様っっ♡♡♡♡♡',
+			love2: (name: string | null | undefined) => name ? `おかえりなさいませ♡♡♡${name}っっ♡♡♡♡♡` : 'おかえりなさいませ♡♡♡ご主人様っっ♡♡♡♡♡',
 
-			normal: name => name ? `おかえりなさい、${name}！` : 'おかえりなさい！',
+			normal: (name: string | null | undefined) => name ? `おかえりなさい、${name}！` : 'おかえりなさい！',
 		},
 
 		itterassyai: {
-			love: name => name ? `いってらっしゃい、${name}♪` : 'いってらっしゃい♪',
+			love: (name: string | null | undefined) => name ? `いってらっしゃい、${name}♪` : 'いってらっしゃい♪',
 
-			normal: name => name ? `いってらっしゃい、${name}！` : 'いってらっしゃい！',
+			normal: (name: string | null | undefined) => name ? `いってらっしゃい、${name}！` : 'いってらっしゃい！',
 		},
 
 		tooLong: '長すぎる気がします...',
@@ -103,7 +103,7 @@ export default {
 		suki: {
 			normal: 'えっ… ありがとうございます…♪',
 
-			love: name => `私もその… ${name}のこと好きですよ！`,
+			love: (name: string) => `私もその… ${name}のこと好きですよ！`,
 
 			hate: null
 		},
@@ -132,7 +132,7 @@ export default {
 			hate: '…頭大丈夫ですか？'
 		},
 
-		itai: name => name ? `${name}、大丈夫ですか…？ いたいのいたいの飛んでけっ！` : '大丈夫ですか…？ いたいのいたいの飛んでけっ！',
+		itai: (name: string | null | undefined) => name ? `${name}、大丈夫ですか…？ いたいのいたいの飛んでけっ！` : '大丈夫ですか…？ いたいのいたいの飛んでけっ！',
 
 		ote: {
 			normal: 'くぅん... 私わんちゃんじゃないですよ...？',
@@ -146,25 +146,25 @@ export default {
 
 		transferNeedDm: 'わかりました、それはチャットで話しませんか？',
 
-		transferCode: code => `わかりました。\n合言葉は「${code}」です！`,
+		transferCode: (code: string) => `わかりました。\n合言葉は「${code}」です！`,
 
 		transferFailed: 'うーん、合言葉が間違ってませんか...？',
 
-		transferDone: name => name ? `はっ...！ おかえりなさい、${name}！` : `はっ...！ おかえりなさい！`,
+		transferDone: (name: string | null | undefined) => name ? `はっ...！ おかえりなさい、${name}！` : `はっ...！ おかえりなさい！`,
 	},
 
 	keyword: {
-		learned: (word, reading) => `(${word}..... ${reading}..... 覚えました)`,
+		learned: (word: string, reading: string) => `(${word}..... ${reading}..... 覚えました)`,
 
-		remembered: (word) => `${word}`
+		remembered: (word: string) => `${word}`
 	},
 
 	dice: {
-		done: res => `${res} です！`
+		done: (res: string) => `${res} です！`
 	},
 
 	birthday: {
-		happyBirthday: name => name ? `お誕生日おめでとうございます、${name}🎉` : 'お誕生日おめでとうございます🎉',
+		happyBirthday: (name: string | null | undefined) => name ? `お誕生日おめでとうございます、${name}🎉` : 'お誕生日おめでとうございます🎉',
 	},
 
 	/**
@@ -184,52 +184,52 @@ export default {
 		/**
 		 * 対局開始
 		 */
-		started: (name, strength) => `対局を${name}と始めました！ (強さ${strength})`,
+		started: (name: string, strength: string) => `対局を${name}と始めました！ (強さ${strength})`,
 
 		/**
 		 * 接待開始
 		 */
-		startedSettai: name => `(${name}の接待を始めました)`,
+		startedSettai: (name: string) => `(${name}の接待を始めました)`,
 
 		/**
 		 * 勝ったとき
 		 */
-		iWon: name => `${name}に勝ちました♪`,
+		iWon: (name: string) => `${name}に勝ちました♪`,
 
 		/**
 		 * 接待のつもりが勝ってしまったとき
 		 */
-		iWonButSettai: name => `(${name}に接待で勝っちゃいました...)`,
+		iWonButSettai: (name: string) => `(${name}に接待で勝っちゃいました...)`,
 
 		/**
 		 * 負けたとき
 		 */
-		iLose: name => `${name}に負けました...`,
+		iLose: (name: string) => `${name}に負けました...`,
 
 		/**
 		 * 接待で負けてあげたとき
 		 */
-		iLoseButSettai: name => `(${name}に接待で負けてあげました...♪)`,
+		iLoseButSettai: (name: string) => `(${name}に接待で負けてあげました...♪)`,
 
 		/**
 		 * 引き分けたとき
 		 */
-		drawn: name => `${name}と引き分けました～`,
+		drawn: (name: string) => `${name}と引き分けました～`,
 
 		/**
 		 * 接待で引き分けたとき
 		 */
-		drawnSettai: name => `(${name}に接待で引き分けました...)`,
+		drawnSettai: (name: string) => `(${name}に接待で引き分けました...)`,
 
 		/**
 		 * 相手が投了したとき
 		 */
-		youSurrendered: name => `${name}が投了しちゃいました`,
+		youSurrendered: (name: string) => `${name}が投了しちゃいました`,
 
 		/**
 		 * 接待してたら相手が投了したとき
 		 */
-		settaiButYouSurrendered: name => `(${name}を接待していたら投了されちゃいました... ごめんなさい)`,
+		settaiButYouSurrendered: (name: string) => `(${name}を接待していたら投了されちゃいました... ごめんなさい)`,
 	},
 
 	/**
@@ -264,27 +264,27 @@ export default {
 		/**
 		 * 小さい数を言われたとき
 		 */
-		grater: num => `${num}より大きいですね`,
+		grater: (num: string) => `${num}より大きいですね`,
 
 		/**
 		 * 小さい数を言われたとき(2度目)
 		 */
-		graterAgain: num => `もう一度言いますが${num}より大きいですよ！`,
+		graterAgain: (num: string) => `もう一度言いますが${num}より大きいですよ！`,
 
 		/**
 		 * 大きい数を言われたとき
 		 */
-		less: num => `${num}より小さいですね`,
+		less: (num: string) => `${num}より小さいですね`,
 
 		/**
 		 * 大きい数を言われたとき(2度目)
 		 */
-		lessAgain: num => `もう一度言いますが${num}より小さいですよ！`,
+		lessAgain: (num: string) => `もう一度言いますが${num}より小さいですよ！`,
 
 		/**
 		 * 正解したとき
 		 */
-		congrats: tries => `正解です🎉 (${tries}回目で当てました)`,
+		congrats: (tries: string) => `正解です🎉 (${tries}回目で当てました)`,
 	},
 
 	/**
@@ -295,11 +295,11 @@ export default {
 
 		matakondo: 'また今度やりましょう！',
 
-		intro: minutes => `みなさん、数取りゲームしましょう！\n0~100の中で最も大きい数字を取った人が勝ちです。他の人と被ったらだめですよ～\n制限時間は${minutes}分です。数字はこの投稿にリプライで送ってくださいね！`,
+		intro: (minutes: number) => `みなさん、数取りゲームしましょう！\n0~100の中で最も大きい数字を取った人が勝ちです。他の人と被ったらだめですよ～\n制限時間は${minutes}分です。数字はこの投稿にリプライで送ってくださいね！`,
 
 		finish: 'ゲームの結果発表です！',
 
-		finishWithWinner: (user, name) => name ? `今回は${user}さん(${name})の勝ちです！またやりましょう♪` : `今回は${user}さんの勝ちです！またやりましょう♪`,
+		finishWithWinner: (user: string, name: string | null | undefined) => name ? `今回は${user}さん(${name})の勝ちです！またやりましょう♪` : `今回は${user}さんの勝ちです！またやりましょう♪`,
 
 		finishWithNoWinner: '今回は勝者はいませんでした... またやりましょう♪',
 
@@ -310,14 +310,14 @@ export default {
 	 * 絵文字生成
 	 */
 	emoji: {
-		suggest: emoji => `こんなのはどうですか？→${emoji}`,
+		suggest: (emoji: string) => `こんなのはどうですか？→${emoji}`,
 	},
 
 	/**
 	 * 占い
 	 */
 	fortune: {
-		cw: name => name ? `私が今日の${name}の運勢を占いました...` : '私が今日のあなたの運勢を占いました...',
+		cw: (name: string | null | undefined) => name ? `私が今日の${name}の運勢を占いました...` : '私が今日のあなたの運勢を占いました...',
 	},
 
 	/**
@@ -330,7 +330,7 @@ export default {
 
 		tooLong: '長すぎます…',
 
-		notify: (time, name) => name ? `${name}、${time}経ちましたよ！` : `${time}経ちましたよ！`
+		notify: (time: string, name: string | null | undefined) => name ? `${name}、${time}経ちましたよ！` : `${time}経ちましたよ！`
 	},
 
 	/**
@@ -343,11 +343,11 @@ export default {
 
 		reminds: 'やること一覧です！',
 
-		notify: (name) => name ? `${name}、これやりましたか？` : `これやりましたか？`,
+		notify: (name: string | null | undefined) => name ? `${name}、これやりましたか？` : `これやりましたか？`,
 
-		notifyWithThing: (thing, name) => name ? `${name}、「${thing}」やりましたか？` : `「${thing}」やりましたか？`,
+		notifyWithThing: (thing: string, name: string | null | undefined) => name ? `${name}、「${thing}」やりましたか？` : `「${thing}」やりましたか？`,
 
-		done: (name) => name ? [
+		done: (name: string | null | undefined) => name ? [
 			`よく出来ました、${name}♪`,
 			`${name}、さすがですっ！`,
 			`${name}、えらすぎます...！`,
@@ -364,7 +364,7 @@ export default {
 	 * バレンタイン
 	 */
 	valentine: {
-		chocolateForYou: name => name ? `${name}、その... チョコレート作ったのでよかったらどうぞ！🍫` : 'チョコレート作ったのでよかったらどうぞ！🍫',
+		chocolateForYou: (name: string | null | undefined) => name ? `${name}、その... チョコレート作ったのでよかったらどうぞ！🍫` : 'チョコレート作ったのでよかったらどうぞ！🍫',
 	},
 
 	server: {
@@ -382,14 +382,14 @@ export default {
 	},
 
 	checkCustomEmojis: {
-		post: (server_name, num) => `${server_name}に${num}件の絵文字が追加されました！`,
-		emojiPost: emoji => `:${emoji}:\n(\`${emoji}\`) #AddCustomEmojis`,
-		postOnce: (server_name, num, text) => `${server_name}に${num}件の絵文字が追加されました！\n${text} #AddCustomEmojis`,
-		emojiOnce: emoji => `:${emoji}:(\`${emoji}\`)`
+		post: (server_name: string, num: number) => `${server_name}に${num}件の絵文字が追加されました！`,
+		emojiPost: (emoji: string) => `:${emoji}:\n(\`${emoji}\`) #AddCustomEmojis`,
+		postOnce: (server_name: string, num: number, text: string) => `${server_name}に${num}件の絵文字が追加されました！\n${text} #AddCustomEmojis`,
+		emojiOnce: (emoji: string) => `:${emoji}:(\`${emoji}\`)`
 	},
 
 	sleepReport: {
-		report: hours => `んぅ、${hours}時間くらい寝ちゃってたみたいです`,
+		report: (hours: number) => `んぅ、${hours}時間くらい寝ちゃってたみたいです`,
 		reportUtatane: 'ん... うたた寝しちゃってました',
 	},
 
@@ -469,9 +469,9 @@ export default {
 			'じー',
 			'はにゃ？',
 		],
-		want: item => `${item}、欲しいなぁ...`,
-		see: item => `お散歩していたら、道に${item}が落ちているのを見たんです！`,
-		expire: item => `気づいたら、${item}の賞味期限が切れてました…`,
+		want: (item: string) => `${item}、欲しいなぁ...`,
+		see: (item: string) => `お散歩していたら、道に${item}が落ちているのを見たんです！`,
+		expire: (item: string) => `気づいたら、${item}の賞味期限が切れてました…`,
 	},
 };
 

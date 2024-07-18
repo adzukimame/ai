@@ -2,7 +2,7 @@ import type { DriveFilesCreateResponse } from 'misskey-js/entities.js';
 import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
-import { genMaze } from './gen-maze.js';
+import { genMaze, MazeComplexity } from './gen-maze.js';
 import { renderMaze } from './render-maze.js';
 import Message from '@/message.js';
 import config from '@/config.js';
@@ -43,7 +43,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async genMazeFile(seed, size?): Promise<DriveFilesCreateResponse> {
+	private async genMazeFile(seed: string, size?: MazeComplexity): Promise<DriveFilesCreateResponse> {
 		this.log('Maze generating...');
 		const maze = genMaze(seed, size);
 
@@ -62,7 +62,7 @@ export default class extends Module {
 	@bindThis
 	private async mentionHook(msg: Message) {
 		if (msg.includes(['迷路'])) {
-			let size: string | null = null;
+			let size: MazeComplexity;
 			if (msg.includes(['接待'])) size = 'veryEasy';
 			if (msg.includes(['簡単', 'かんたん', '易しい', 'やさしい', '小さい', 'ちいさい'])) size = 'easy';
 			if (msg.includes(['難しい', 'むずかしい', '複雑な', '大きい', 'おおきい'])) size = 'hard';
@@ -70,7 +70,7 @@ export default class extends Module {
 			if (msg.includes(['藍']) && msg.includes(['本気'])) size = 'ai';
 			this.log('Maze requested');
 			setTimeout(async () => {
-				const file = await this.genMazeFile(Date.now(), size);
+				const file = await this.genMazeFile(Date.now().toString(), size);
 				this.log('Replying...');
 				msg.reply(serifs.maze.foryou, { file });
 			}, 3000);
