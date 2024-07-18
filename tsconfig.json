@@ -17,7 +17,7 @@
 		"strictPropertyInitialization": false,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"esModuleInterop": true,
 		"typeRoots": [
 			"./node_modules/@types"

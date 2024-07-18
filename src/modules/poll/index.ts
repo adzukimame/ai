@@ -6,6 +6,11 @@ import { genItem } from '@/vocabulary.js';
 import config from '@/config.js';
 import type { Note } from 'misskey-js/entities.js';
 
+type TimeoutCallbackData = {
+	title: string,
+	noteId: Note['id'],
+};
+
 export default class extends Module {
 	public readonly name = 'poll';
 
@@ -86,7 +91,7 @@ export default class extends Module {
 		this.setTimeoutWithPersistence(duration + 3000, {
 			title: poll[0],
 			noteId: note.id,
-		});
+		} as TimeoutCallbackData);
 	}
 
 	@bindThis
@@ -103,12 +108,12 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async timeoutCallback({ title, noteId }) {
+	private async timeoutCallback({ title, noteId }: TimeoutCallbackData) {
 		const note = await this.ai.api('notes/show', { noteId });
 
 		const choices = note.poll!.choices;
 
-		let mostVotedChoice;
+		let mostVotedChoice: Exclude<Required<Note>['poll'], null>['choices'][number] | null = null;
 
 		for (const choice of choices) {
 			if (mostVotedChoice == null) {
@@ -121,7 +126,11 @@ export default class extends Module {
 			}
 		}
 
-		const mostVotedChoices = choices.filter(choice => choice.votes === mostVotedChoice.votes);
+		if (mostVotedChoice === null) {
+			return;
+		}
+
+		const mostVotedChoices = choices.filter(choice => choice.votes === mostVotedChoice!.votes);
 
 		if (mostVotedChoice.votes === 0) {
 			this.ai.post({ // TODO: Extract serif

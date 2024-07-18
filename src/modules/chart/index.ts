@@ -1,4 +1,4 @@
-import type { DriveFilesCreateResponse } from 'misskey-js/entities.js';
+import type { UserLite, DriveFilesCreateResponse } from 'misskey-js/entities.js';
 import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
@@ -7,48 +7,7 @@ import { renderChart } from './render-chart.js';
 import { items } from '@/vocabulary.js';
 import config from '@/config.js';
 
-type UserNotesChart = {
-	diffs: {
-		normal: number[],
-		reply: number[],
-		renote: number[],
-		withFile: number[],
-	},
-};
-
-type UserFollowingChartItem = {
-	total: number[],
-	inc: number[],
-	dec: number[],
-};
-
-type UserFollowingChart = {
-	local: {
-		followings: UserFollowingChartItem,
-		followers: UserFollowingChartItem,
-	},
-	remote: {
-		followings: UserFollowingChartItem,
-		followers: UserFollowingChartItem,
-	},
-};
-
-type NotesChartItem = {
-	total: number[],
-	inc: number[],
-	dec: number[],
-	diffs: {
-		normal: number[],
-		reply: number[],
-		renote: number[],
-		withFile: number[],
-	},
-};
-
-type NotesChart = {
-	local: NotesChartItem,
-	remote: NotesChartItem,
-};
+type ChartType = 'userNotes' | 'followers' | 'notes' | 'random';
 
 export default class extends Module {
 	public readonly name = 'chart';
@@ -86,7 +45,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async genChart(type, params?): Promise<DriveFilesCreateResponse> {
+	private async genChart(type: ChartType, params?: { user: UserLite }): Promise<DriveFilesCreateResponse> {
 		this.log('Chart data fetching...');
 
 		let chart;
@@ -95,11 +54,11 @@ export default class extends Module {
 			const data = await this.ai.api('charts/user/notes', {
 				span: 'day',
 				limit: 30,
-				userId: params.user.id
-			}) as UserNotesChart;
+				userId: params?.user.id!
+			});
 
 			chart = {
-				title: `@${params.user.username}さんの投稿数`,
+				title: `@${params?.user.username}さんの投稿数`,
 				datasets: [{
 					data: data.diffs.normal
 				}, {
@@ -112,11 +71,11 @@ export default class extends Module {
 			const data = await this.ai.api('charts/user/following', {
 				span: 'day',
 				limit: 30,
-				userId: params.user.id
-			}) as UserFollowingChart;
+				userId: params?.user.id!
+			});
 
 			chart = {
-				title: `@${params.user.username}さんのフォロワー数`,
+				title: `@${params?.user.username}さんのフォロワー数`,
 				datasets: [{
 					data: data.local.followers.total
 				}, {
@@ -127,7 +86,7 @@ export default class extends Module {
 			const data = await this.ai.api('charts/notes', {
 				span: 'day',
 				limit: 30,
-			}) as NotesChart;
+			});
 
 			chart = {
 				datasets: [{
@@ -145,7 +104,7 @@ export default class extends Module {
 			const diffRange = 150;
 			const datasetCount = 1 + Math.floor(Math.random() * 3);
 
-			let datasets: any[] = [];
+			let datasets: { data: number[] }[] = [];
 
 			for (let d = 0; d < datasetCount; d++) {
 				let values = [Math.random() * 1000];
@@ -186,7 +145,7 @@ export default class extends Module {
 			this.log('Chart requested');
 		}
 
-		let type = 'random';
+		let type: ChartType = 'random';
 		if (msg.includes(['フォロワー'])) type = 'followers';
 		if (msg.includes(['投稿'])) type = 'userNotes';
 

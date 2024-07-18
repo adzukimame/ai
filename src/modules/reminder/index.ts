@@ -8,14 +8,18 @@ import config from '@/config.js';
 
 const NOTIFY_INTERVAL = 1000 * 60 * 60 * 12;
 
+type TimeoutCallbackData = {
+	id: Message['id'],
+};
+
 export default class extends Module {
 	public readonly name = 'reminder';
 
 	private reminds: loki.Collection<{
-		userId: string;
-		id: string;
+		userId: Message['userId'];
+		id: Message['id'];
 		thing: string | null;
-		quoteId: string | null;
+		quoteId: Exclude<Message['quoteId'], undefined>;
 		times: number; // 催促した回数(使うのか？)
 		createdAt: number;
 	}>;
@@ -43,7 +47,7 @@ export default class extends Module {
 				userId: msg.userId,
 			});
 
-			const getQuoteLink = id => `[${id}](${config.host}/notes/${id})`;
+			const getQuoteLink = (id: string | null) => `[${id}](${config.host}/notes/${id})`;
 
 			msg.reply(serifs.reminder.reminds + '\n' + reminds.map(remind => `・${remind.thing ? remind.thing : getQuoteLink(remind.quoteId)}`).join('\n'));
 			return true;
@@ -90,7 +94,7 @@ export default class extends Module {
 		// タイマーセット
 		this.setTimeoutWithPersistence(NOTIFY_INTERVAL, {
 			id: remind!.id,
-		});
+		} as TimeoutCallbackData);
 
 		return {
 			reaction: '🆗',
@@ -99,7 +103,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async contextHook(key: any, msg: Message, data: any) {
+	private async contextHook(key: string, msg: Message, data: any) {
 		if (msg.text == null) return;
 
 		const remind = this.reminds.findOne({
@@ -129,7 +133,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async timeoutCallback(data) {
+	private async timeoutCallback(data: TimeoutCallbackData) {
 		const remind = this.reminds.findOne({
 			id: data.id
 		});
@@ -164,6 +168,6 @@ export default class extends Module {
 		// タイマーセット
 		this.setTimeoutWithPersistence(NOTIFY_INTERVAL, {
 			id: remind.id,
-		});
+		} as TimeoutCallbackData);
 	}
 }

@@ -127,11 +127,11 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async contextHook(key: any, msg: Message, data: any) {
+	private async contextHook(key: string, msg: Message, data: any) {
 		if (msg.text == null) return;
 
 		const done = () => {
-			msg.reply(serifs.core.setNameOk(msg.friend.name));
+			msg.reply(serifs.core.setNameOk(msg.friend.name!));
 			this.unsubscribeReply(key);
 		};
 

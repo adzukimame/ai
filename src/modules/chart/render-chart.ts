@@ -96,7 +96,7 @@ export function renderChart(chart: Chart) {
 		ctx.fillText(step.toString(), chartAreaX, chartAreaY + y - 8);
 	}
 
-	const newDatasets: any[] = [];
+	const newDatasets: { data: number[] }[] = [];
 
 	for (let series = 0; series < serieses; series++) {
 		newDatasets.push({
@@ -194,7 +194,7 @@ function niceScale(lowerBound: number, upperBound: number, ticks: number): numbe
 	// Calculate pretty step value
 	const mag = Math.floor(Math.log10(tempStep));
 	const magPow = Math.pow(10, mag);
-	const magMsd = (parseInt as any)(tempStep / magPow);
+	const magMsd = Math.floor(tempStep / magPow);
 	const stepSize = magMsd * magPow;
 
 	// build Y label array.

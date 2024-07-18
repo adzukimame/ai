@@ -20,9 +20,14 @@ type Config = {
 	memoryDir?: string;
 };
 
-import config from '../config.json' assert { type: 'json' };
+import baseConfig from '../config.json' assert { type: 'json' };
 
-config['wsUrl'] = config.host.replace('http', 'ws');
-config['apiUrl'] = config.host + '/api';
+baseConfig.host = new URL(baseConfig.host).origin;
+
+const config: Config = {
+	...baseConfig,
+	wsUrl: baseConfig.host.replace('http', 'ws'),
+  apiUrl: baseConfig.host + '/api',
+};
 
 export default config as Config;

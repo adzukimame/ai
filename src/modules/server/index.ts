@@ -3,11 +3,12 @@ import Module from '@/module.js';
 import serifs from '@/serifs.js';
 import config from '@/config.js';
 import type { ServerStats } from 'misskey-js/entities.js';
+import { Channels, ChannelConnection } from 'misskey-js';
 
 export default class extends Module {
 	public readonly name = 'server';
 
-	private connection?: any;
+	private connection?: ChannelConnection<Channels['serverStats']>;
 	private recentStat: ServerStats;
 	private warned = false;
 	private lastWarnedAt: number;
@@ -38,7 +39,7 @@ export default class extends Module {
 
 	@bindThis
 	private check() {
-		const average = (arr) => arr.reduce((a, b) => a + b) / arr.length;
+		const average = (arr: number[]) => arr.reduce((a, b) => a + b) / arr.length;
 
 		const cpuPercentages = this.statsLogs.map(s => s && s.cpu * 100 || 0);
 		const cpuPercentage = average(cpuPercentages);

@@ -509,10 +509,11 @@ export default class 藍 {
 	public setMeta(meta: Partial<Meta>) {
 		const rec = this.getMeta();
 
-		for (const [k, v] of Object.entries(meta)) {
-			rec[k] = v;
-		}
+		const newMeta: Meta = {
+			...rec,
+			...meta,
+		};
 
-		this.meta.update(rec);
+		this.meta.update(newMeta);
 	}
 }

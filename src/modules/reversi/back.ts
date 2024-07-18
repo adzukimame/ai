@@ -7,12 +7,14 @@
  */
 
 import { api as misskeyApi } from 'misskey-js';
-import type { UserLite, Note } from 'misskey-js/entities.js';
+import type { Channels } from 'misskey-js';
+import type { UserLite, MeDetailed, Note, ReversiGameDetailed, ReversiMatchResponse } from 'misskey-js/entities.js';
 import * as Reversi from './engine.js';
 import config from '@/config.js';
 import serifs from '@/serifs.js';
+import type { Form } from './index.js';
 
-function getUserName(user) {
+function getUserName(user: Pick<UserLite, 'name' | 'username'>) {
 	return user.name || user.username;
 }
 
@@ -29,9 +31,9 @@ const apiClient = new misskeyApi.APIClient({
 });
 
 class Session {
-	private account: UserLite;
-	private game: any;
-	private form: any;
+	private account: MeDetailed;
+	private game: ReversiGameDetailed;
+	private form: Form;
 	private engine: Reversi.Game;
 	private botColor: Reversi.Color;
 
@@ -50,7 +52,7 @@ class Session {
 	/**
 	 * 最大のターン数
 	 */
-	private maxTurn;
+	private maxTurn: number;
 
 	/**
 	 * 現在のターン数
@@ -73,7 +75,7 @@ class Session {
 	}
 
 	private get strength(): number {
-		return this.form.find(i => i.id == 'strength').value;
+		return this.form.find(i => i.id == 'strength')!.value as number;
 	}
 
 	private get isSettai(): boolean {
@@ -81,7 +83,7 @@ class Session {
 	}
 
 	private get allowPost(): boolean {
-		return this.form.find(i => i.id == 'publish').value;
+		return this.form.find(i => i.id == 'publish')!.value as boolean;
 	}
 
 	private get url(): string {
@@ -102,7 +104,7 @@ class Session {
 	}
 
 	// 親プロセスからデータをもらう
-	private onInit = (msg: any) => {
+	private onInit = (msg: { game: ReversiMatchResponse, form: Form, account: MeDetailed }) => {
 		this.game = msg.game;
 		this.form = msg.form;
 		this.account = msg.account;
@@ -111,7 +113,7 @@ class Session {
 	/**
 	 * 対局が始まったとき
 	 */
-	private onStarted = (msg: any) =>  {
+	private onStarted = (msg: Parameters<Channels['reversiGame']['events']['started']>[0]) =>  {
 		this.game = msg.game;
 		if (this.game.canPutEverywhere) { // 対応してない
 			process.send!({
@@ -141,7 +143,7 @@ class Session {
 			if (pix == 'null') return;
 
 			const [x, y] = this.engine.posToXy(i);
-			const get = (x, y) => {
+			const get = (x: number, y: number) => {
 				if (x < 0 || y < 0 || x >= this.engine.mapWidth || y >= this.engine.mapHeight) return 'null';
 				return this.engine.mapDataGet(this.engine.xyToPos(x, y));
 			};
@@ -181,7 +183,7 @@ class Session {
 
 			const [x, y] = this.engine.posToXy(i);
 
-			const check = (x, y) => {
+			const check = (x: number, y: number) => {
 				if (x < 0 || y < 0 || x >= this.engine.mapWidth || y >= this.engine.mapHeight) return 0;
 				return this.sumiIndexes.includes(this.engine.xyToPos(x, y));
 			};
@@ -213,7 +215,7 @@ class Session {
 	/**
 	 * 対局が終わったとき
 	 */
-	private onEnded = async (msg: any) =>  {
+	private onEnded = async (msg: Parameters<Channels['reversiGame']['events']['ended']>[0]) =>  {
 		// ストリームから切断
 		process.send!({
 			type: 'ended'
@@ -221,13 +223,7 @@ class Session {
 
 		let text: string;
 
-		if (msg.game.surrendered) {
-			if (this.isSettai) {
-				text = serifs.reversi.settaiButYouSurrendered(this.userName);
-			} else {
-				text = serifs.reversi.youSurrendered(this.userName);
-			}
-		} else if (msg.winnerId) {
+		if (msg.winnerId) {
 			if (msg.winnerId == this.account.id) {
 				if (this.isSettai) {
 					text = serifs.reversi.iWonButSettai(this.userName);
@@ -257,7 +253,7 @@ class Session {
 	/**
 	 * 打たれたとき
 	 */
-	private onLog = (log: any) => {
+	private onLog = (log: Parameters<Channels['reversiGame']['events']['log']>[0]) => {
 		if (log.id == null || !this.appliedOps.includes(log.id)) {
 			switch (log.operation) {
 				case 'put': {
@@ -444,18 +440,8 @@ class Session {
 	 * Misskeyに投稿します
 	 * @param text 投稿内容
 	 */
-	private post = async (text: string, renote?: any): Promise<Note | null> => {
+	private post = async (text: string, renote?: Note | null): Promise<Note | null> => {
 		if (this.allowPost) {
-			const body = {
-				i: config.i,
-				text: text,
-				visibility: 'home'
-			} as any;
-
-			if (renote) {
-				body.renoteId = renote.id;
-			}
-
 			try {
 				const res = await apiClient.request('notes/create', {
 					text: text,
