@@ -49,7 +49,7 @@ Misskey用の日本語Botです。
 	"checkEmojisAtOnce": "カスタム絵文字チェック機能で投稿をまとめる場合は true を入れる (まとめない場合は false)",
 	"mazeEnabled": "迷路の生成を無効化する場合は false を入れてください",
 	"mecab": "/usr/bin/mecab",
-	"mecabDic": "/usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd/",
+	"mecabDic": "/var/lib/mecab/dic/ipadic-utf8/",
 	"memoryDir": "data"
 }
 ```
