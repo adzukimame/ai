@@ -1,11 +1,12 @@
 {
 	"_v": "2.0.1",
 	"type": "module",
-	"main": "./built/index.js",
+	"private": true,
 	"scripts": {
 		"start": "node ./built",
 		"start-daemon": "nodemon ./built",
 		"build": "tspc",
+		"typecheck": "tsc --noEmit",
 		"test": "jest"
 	},
 	"dependencies": {
