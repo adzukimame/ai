@@ -20,7 +20,8 @@ jobs:
       uses: actions/setup-node@v4.0.2
       with:
         node-version: ${{ matrix.node-version }}
+    - run: corepack enable
     - run: npm install
     - run: cp config.example.json config.json
-    - name: Build
+    - name: Typecheck
       run: npm run typecheck

@@ -1,6 +1,7 @@
 config.json
 built
 node_modules
+data
 memory.json
 font.ttf
 google-ime-user-dictionary-ja-en.txt
