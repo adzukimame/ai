@@ -1,22 +1,18 @@
-name: Test (production build)
+name: Lint
 
 on:
   push:
     branches:
-      - master
       - develop-mame
   pull_request:
 
-env:
-  NODE_ENV: production
-
 jobs:
-  test_production_build:
+  typecheck:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [20.13.1]
+        node-version: [20.16.0]
 
     steps:
     - uses: actions/checkout@v4.1.1
@@ -27,4 +23,4 @@ jobs:
     - run: npm install
     - run: cp config.example.json config.json
     - name: Build
-      run: npm run build
+      run: npm run typecheck
