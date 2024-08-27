@@ -16,7 +16,7 @@ export default class extends Module {
 
 	@bindThis
 	private onLocalNote(note: Note) {
-		// @ts-expect-error
+		// @ts-expect-error isFirstNoteは存在しない
 		if (note.isFirstNote) {
 			setTimeout(() => {
 				this.ai.api('notes/create', {

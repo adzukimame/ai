@@ -4,6 +4,7 @@ import IModule from '@/module.js';
 import getDate from '@/utils/get-date.js';
 import type { UserLite, UserDetailed } from 'misskey-js/entities.js';
 import { genItem } from '@/vocabulary.js';
+import type { Serializable } from './types/serializable.js';
 
 export type FriendDocUser = Pick<UserLite, 'id' | 'name' | 'username' | 'host' | 'isBot'> & Partial<Pick<UserDetailed, 'isFollowing' | 'followersCount' | 'birthday'>>;
 
@@ -14,7 +15,7 @@ export type FriendDoc = {
 	love?: number;
 	lastLoveIncrementedAt?: string;
 	todayLoveIncrements?: number;
-	perModulesData?: any;
+	perModulesData?: Record<IModule['name'], Record<string, Serializable>>;
 	married?: boolean;
 	transferCode?: string;
 	reversiStrength?: number | null;
@@ -29,7 +30,7 @@ function formatUser(value: FriendDocUser & Partial<UserLite | UserDetailed>): Fr
 		isFollowing: value.isFollowing,
 		isBot: value.isBot,
 		followersCount: value.followersCount,
-		birthday: value.birthday,
+		birthday: value.birthday
 	};
 }
 
@@ -54,7 +55,7 @@ export default class Friend {
 
 	public doc: FriendDoc;
 
-	constructor(ai: 藍, opts: { user?: UserLite | UserDetailed, doc?: FriendDoc }) {
+	constructor(ai: 藍, opts: { user?: UserLite | UserDetailed; doc?: FriendDoc }) {
 		this.ai = ai;
 
 		if (opts.user) {
@@ -89,7 +90,7 @@ export default class Friend {
 	public updateUser(user: Partial<FriendDocUser | UserLite | UserDetailed>) {
 		this.doc.user = formatUser({
 			...this.doc.user,
-			...user,
+			...user
 		});
 		this.save();
 	}
@@ -109,7 +110,7 @@ export default class Friend {
 	}
 
 	@bindThis
-	public setPerModulesData(module: IModule, data: any) {
+	public setPerModulesData(module: IModule, data: Record<string, Serializable>) {
 		if (this.doc.perModulesData == null) {
 			this.doc.perModulesData = {};
 		}

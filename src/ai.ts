@@ -13,6 +13,7 @@ import type { MeDetailed, User, UserDetailed, Note, Notification, DriveFilesCrea
 
 import config from '@/config.js';
 import Module from '@/module.js';
+import type { ModuleDoc } from '@/module.js';
 import Message from '@/message.js';
 import Friend, { FriendDoc } from '@/friend.js';
 import log from '@/utils/log.js';
@@ -20,18 +21,18 @@ import { sleep } from './utils/sleep.js';
 import pkg from '../package.json' assert { type: 'json' };
 
 type MentionHook = (msg: Message) => Promise<boolean | HandlerResult>;
-type ContextHook = (key: any, msg: Message, data?: any) => Promise<void | boolean | HandlerResult>;
-type TimeoutCallback = (data?: any) => void;
+type ContextHook<ContextData = unknown> = (key: string | null, msg: Message, data: ContextData) => Promise<void | boolean | HandlerResult>;
+type TimeoutCallback<TimerData = unknown> = (data: TimerData) => void;
 
 export type HandlerResult = {
 	reaction?: string | null;
 	immediate?: boolean;
 };
 
-export type InstallerResult = {
+export type InstallerResult<ContextData, TimerData> = {
 	mentionHook?: MentionHook;
-	contextHook?: ContextHook;
-	timeoutCallback?: TimeoutCallback;
+	contextHook?: ContextHook<ContextData>;
+	timeoutCallback?: TimeoutCallback<TimerData>;
 };
 
 export type Meta = {
@@ -60,7 +61,7 @@ export default class 藍 {
 		userId?: string;
 		module: string;
 		key: string | null;
-		data?: any;
+		data?: unknown;
 	}>;
 
 	private timers: loki.Collection<{
@@ -68,24 +69,25 @@ export default class 藍 {
 		module: string;
 		insertedAt: number;
 		delay: number;
-		data?: any;
+		data?: unknown;
 	}>;
 
 	public friends: loki.Collection<FriendDoc>;
-	public moduleData: loki.Collection<any>;
+	public moduleData: loki.Collection<ModuleDoc>;
 
 	/**
 	 * 藍インスタンスを生成します
 	 * @param account 藍として使うアカウント
 	 * @param modules モジュール。先頭のモジュールほど高優先度
 	 */
-	constructor(account: MeDetailed, modules: Module[]) {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	constructor(account: MeDetailed, modules: Module<any, any>[]) {
 		this.account = account;
 		this.modules = modules;
 
 		this.apiClient = new misskeyApi.APIClient({
 			origin: config.host,
-			credential: config.i,
+			credential: config.i
 		});
 
 		let memoryDir = '.';
@@ -241,9 +243,7 @@ export default class 藍 {
 		const isNoContext = msg.replyId == null;
 
 		// Look up the context
-		const context = isNoContext ? null : this.contexts.findOne({
-			noteId: msg.replyId
-		});
+		const context = isNoContext ? null : this.contexts.findOne({ noteId: msg.replyId });
 
 		let reaction: string | null = 'love';
 		let immediate: boolean = false;
@@ -318,8 +318,7 @@ export default class 藍 {
 						// フォロワー0のリモートユーザー
 						if (user.host != null && user.followersCount === 0) {
 							this.api('following/requests/reject', { userId: user.id });
-						}
-						else {
+						} else {
 							this.api('following/requests/accept', { userId: user.id });
 						}
 					});
@@ -348,7 +347,7 @@ export default class 藍 {
 	@bindThis
 	private logWaking() {
 		this.setMeta({
-			lastWakingAt: Date.now(),
+			lastWakingAt: Date.now()
 		});
 	}
 
@@ -356,8 +355,8 @@ export default class 藍 {
 	 * データベースのコレクションを取得します
 	 */
 	@bindThis
-	public getCollection(name: string, opts?: any): loki.Collection {
-		let collection: loki.Collection;
+	public getCollection<T extends object>(name: string, opts?: Partial<CollectionOptions<T>>): loki.Collection<T> {
+		let collection: loki.Collection<T>;
 
 		collection = this.db.getCollection(name);
 
@@ -385,14 +384,14 @@ export default class 藍 {
 	 * ファイルをドライブにアップロードします
 	 */
 	@bindThis
-	public async upload(file: Buffer | fs.ReadStream, meta: { filename: string, contentType: string }): Promise<DriveFilesCreateResponse> {
+	public async upload(file: Buffer | fs.ReadStream, meta: { filename: string; contentType: string }): Promise<DriveFilesCreateResponse> {
 		const form = new FormData();
 		form.set('i', config.i);
 		form.set('file', new File([file], meta.filename, { type: meta.contentType }));
 
 		return fetch(`${config.apiUrl}/drive/files/create`, {
 			method: 'POST',
-			body: form,
+			body: form
 		}).then(res => {
 			if (res.ok) {
 				return res.json();
@@ -424,7 +423,7 @@ export default class 藍 {
 
 		return this.post(Object.assign({
 			visibility: 'specified',
-			visibleUserIds: [userId],
+			visibleUserIds: [userId]
 		}, param));
 	}
 
@@ -434,8 +433,8 @@ export default class 藍 {
 	@bindThis
 	public api<E extends keyof Omit<MisskeyApiEndpoints, 'signup' | 'signup-pending' | 'signin'>>(endpoint: E, param: MisskeyApiEndpoints[E]['req']): Promise<E extends 'users/show' ? (UserDetailed | UserDetailed[]) : MisskeyApiEndpoints[E]['res']> {
 		this.log(`API: ${endpoint}`);
-		
-	  return this.apiClient.request(endpoint as any, param) as any;
+
+		return this.apiClient.request(endpoint as Parameters<misskeyApi.APIClient['request']>[0], param as Parameters<misskeyApi.APIClient['request']>[1]) as Promise<E extends 'users/show' ? (UserDetailed | UserDetailed[]) : MisskeyApiEndpoints[E]['res']>;
 	};
 
 	/**
@@ -446,7 +445,7 @@ export default class 藍 {
 	 * @param data コンテキストに保存するオプションのデータ
 	 */
 	@bindThis
-	public subscribeReply(module: Module, key: string | null, id: string, data?: any) {
+	public subscribeReply<ContextData, T>(module: Module<ContextData, T>, key: string | null, id: string, data?: ContextData) {
 		this.contexts.insertOne({
 			noteId: id,
 			module: module.name,
@@ -461,7 +460,7 @@ export default class 藍 {
 	 * @param key コンテキストを識別するためのキー
 	 */
 	@bindThis
-	public unsubscribeReply(module: Module, key: string | null) {
+	public unsubscribeReply<C, T>(module: Module<C, T>, key: string | null) {
 		this.contexts.findAndRemove({
 			key: key,
 			module: module.name
@@ -476,7 +475,7 @@ export default class 藍 {
 	 * @param data オプションのデータ
 	 */
 	@bindThis
-	public setTimeoutWithPersistence(module: Module, delay: number, data?: any) {
+	public setTimeoutWithPersistence<C, TimerData>(module: Module<C, TimerData>, delay: number, data?: TimerData) {
 		const id = uuid();
 		this.timers.insertOne({
 			id: id,
@@ -497,7 +496,7 @@ export default class 藍 {
 			return rec;
 		} else {
 			const initial: Meta = {
-				lastWakingAt: Date.now(),
+				lastWakingAt: Date.now()
 			};
 
 			this.meta.insertOne(initial);
@@ -511,7 +510,7 @@ export default class 藍 {
 
 		const newMeta: Meta = {
 			...rec,
-			...meta,
+			...meta
 		};
 
 		this.meta.update(newMeta);

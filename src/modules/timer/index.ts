@@ -3,20 +3,20 @@ import Module from '@/module.js';
 import Message from '@/message.js';
 import serifs from '@/serifs.js';
 
-type TimeoutCallbackData =  {
-	msgId: Message['id'],
-	userId: Message['friend']['userId'],
-	time: string,
+type TimerData = {
+	msgId: Message['id'];
+	userId: Message['friend']['userId'];
+	time: string;
 };
 
-export default class extends Module {
+export default class extends Module<unknown, TimerData> {
 	public readonly name = 'timer';
 
 	@bindThis
 	public install() {
 		return {
 			mentionHook: this.mentionHook,
-			timeoutCallback: this.timeoutCallback,
+			timeoutCallback: this.timeoutCallback
 		};
 	}
 
@@ -37,10 +37,9 @@ export default class extends Module {
 			return true;
 		}
 
-		const time =
-			(1000 * seconds) +
-			(1000 * 60 * minutes) +
-			(1000 * 60 * 60 * hours);
+		const time = (1000 * seconds)
+			+ (1000 * 60 * minutes) // eslint-disable-line @stylistic/indent-binary-ops
+			+ (1000 * 60 * 60 * hours);
 
 		if (time > 86400000) {
 			msg.reply(serifs.timer.tooLong);
@@ -56,13 +55,13 @@ export default class extends Module {
 			msgId: msg.id,
 			userId: msg.friend.userId,
 			time: str
-		} as TimeoutCallbackData);
+		});
 
 		return true;
 	}
 
 	@bindThis
-	private timeoutCallback(data: TimeoutCallbackData) {
+	private timeoutCallback(data: TimerData) {
 		const friend = this.ai.lookupFriend(data.userId);
 		if (friend == null) return; // 処理の流れ上、実際にnullになることは無さそうだけど一応
 		const text = serifs.timer.notify(data.time, friend.name);

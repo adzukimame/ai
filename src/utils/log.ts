@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 
-export default function(msg: string) {
+export default function (msg: string) {
 	const now = new Date();
 	const date = `${zeroPad(now.getHours())}:${zeroPad(now.getMinutes())}:${zeroPad(now.getSeconds())}`;
-	console.log(`${chalk.gray(date)} ${msg}`);
+	console.log(`${chalk.gray(date)} ${msg}`); // eslint-disable-line no-console
 }
 
 function zeroPad(num: number, length: number = 2): string {

@@ -17,7 +17,7 @@ export default class extends Module {
 		if (msg.text && msg.includes(['フォロー', 'フォロバ', 'follow me'])) {
 			if (!msg.friend.doc.user.isFollowing) {
 				this.ai.api('following/create', {
-					userId: msg.userId,
+					userId: msg.userId
 				});
 				return {
 					reaction: msg.friend.love >= 0 ? 'like' : null

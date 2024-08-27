@@ -83,7 +83,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async contextHook(key: null, msg: Message) {
+	private async contextHook(_key: string | null, msg: Message) {
 		if (msg.text == null) return {
 			reaction: 'hmm'
 		};
@@ -173,7 +173,7 @@ export default class extends Module {
 			return;
 		}
 
-		let results: string[] = [];
+		const results: string[] = [];
 		let winner: Game['votes'][0]['user'] | null = null;
 
 		for (let i = 100; i >= 0; i--) {

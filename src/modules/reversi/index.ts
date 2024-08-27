@@ -7,8 +7,9 @@ import Message from '@/message.js';
 import Friend from '@/friend.js';
 import getDate from '@/utils/get-date.js';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
-import type { ReversiGameDetailed, ReversiMatchResponse, UserLite } from 'misskey-js/entities.js';
+import { dirname } from 'node:path';
+import type { Channels } from 'misskey-js';
+import type { ReversiGameDetailed, ReversiMatchResponse, UserLite, MeDetailed } from 'misskey-js/entities.js';
 import type { Connection } from 'misskey-js/streaming.js';
 
 const _filename = fileURLToPath(import.meta.url);
@@ -16,20 +17,40 @@ const _dirname = dirname(_filename);
 
 // フォーム
 export type Form = [{
-	id: 'publish',
-	type: 'switch',
-	label: string,
-	value: boolean,
+	id: 'publish';
+	type: 'switch';
+	label: string;
+	value: boolean;
 }, {
-	id: 'strength',
-	type: 'radio',
-	label: string,
-	value: number,
+	id: 'strength';
+	type: 'radio';
+	label: string;
+	value: number;
 	items: {
-		label: string,
-		value: number,
-	}[]
+		label: string;
+		value: number;
+	}[];
 }];
+
+type BuiltinReversiMessage<T extends keyof Channels['reversiGame']['events']> = {
+	type: T;
+	body: Parameters<Channels['reversiGame']['events'][T]>[0];
+};
+
+export type ReversiMessage = {
+	type: '_init_';
+	body: {
+		game: ReversiGameDetailed;
+		form: Form;
+		account: MeDetailed;
+	};
+} | {
+	type: 'putStone';
+	pos: number;
+	id: string;
+} | BuiltinReversiMessage<'started'>
+| BuiltinReversiMessage<'log'>
+| BuiltinReversiMessage<'ended'>;
 
 export default class extends Module {
 	public readonly name = 'reversi';
@@ -43,7 +64,7 @@ export default class extends Module {
 	public install() {
 		if (!config.reversiEnabled) return {};
 
-		this.reversiConnection = this.ai.connection.useChannel('reversi' as any);
+		this.reversiConnection = this.ai.connection.useChannel('reversi' as keyof Channels);
 
 		// 招待されたとき
 		this.reversiConnection.on('invited', msg => this.onReversiInviteMe(msg.user));
@@ -127,7 +148,7 @@ export default class extends Module {
 			id: 'publish',
 			type: 'switch',
 			label: '藍が対局情報を投稿するのを許可',
-			value: true,
+			value: true
 		}, {
 			id: 'strength',
 			type: 'radio',
@@ -164,15 +185,14 @@ export default class extends Module {
 			}
 		});
 
-		ai.on('message', (msg: Record<string, any>) => {
+		ai.on('message', (msg: ReversiMessage) => {
 			if (msg.type == 'putStone') {
 				gw.send('putStone', {
 					pos: msg.pos,
-					id: msg.id,
+					id: msg.id
 				});
 			} else if (msg.type == 'ended') {
 				gw.dispose();
-
 				this.onGameEnded(game);
 			}
 		});
@@ -188,9 +208,15 @@ export default class extends Module {
 			}
 		});
 
-		gw.addListener('started', message => { ai.send({ type: 'started', body: message }); });
-		gw.addListener('log', message => { ai.send({ type: 'log', body: message }); });
-		gw.addListener('ended', message => { ai.send({ type: 'ended', body: message }); });
+		gw.addListener('started', message => {
+			ai.send({ type: 'started', body: message });
+		});
+		gw.addListener('log', message => {
+			ai.send({ type: 'log', body: message });
+		});
+		gw.addListener('ended', message => {
+			ai.send({ type: 'ended', body: message });
+		});
 		//#endregion
 
 		// どんな設定内容の対局でも受け入れる

@@ -106,7 +106,7 @@ export class Game {
 			color,
 			pos,
 			effects,
-			turn,
+			turn
 		});
 
 		this.calcTurn();
@@ -114,10 +114,11 @@ export class Game {
 
 	private calcTurn() {
 		// ターン計算
-		this.turn =
-			this.canPutSomewhere(!this.prevColor) ? !this.prevColor :
-			this.canPutSomewhere(this.prevColor!) ? this.prevColor :
-			null;
+		this.turn = this.canPutSomewhere(!this.prevColor)
+			? !this.prevColor
+			: this.canPutSomewhere(this.prevColor!)
+				? this.prevColor
+				: null;
 	}
 
 	public undo() {
@@ -147,9 +148,11 @@ export class Game {
 
 	public canPut(color: Color, pos: number): boolean {
 		return (
-			this.board[pos] !== null ? false : // 既に石が置いてある場所には打てない
-			this.opts.canPutEverywhere ? this.mapDataGet(pos) === 'empty' : // 挟んでなくても置けるモード
-			this.effects(color, pos).length !== 0); // 相手の石を1つでも反転させられるか
+			this.board[pos] !== null
+				? false // 既に石が置いてある場所には打てない
+				: this.opts.canPutEverywhere
+					? this.mapDataGet(pos) === 'empty' // 挟んでなくても置けるモード
+					: this.effects(color, pos).length !== 0); // 相手の石を1つでも反転させられるか
 	}
 
 	/**
@@ -168,7 +171,7 @@ export class Game {
 			[0, +1], // 下
 			[-1, +1], // 左下
 			[-1, 0], // 左
-			[-1, -1], // 左上
+			[-1, -1] // 左上
 		];
 
 		const effectsInLine = ([dx, dy]: [number, number]): number[] => {
@@ -204,9 +207,12 @@ export class Game {
 	}
 
 	public get winner(): Color | null {
-		return this.isEnded ?
-			this.blackCount === this.whiteCount ? null :
-			this.opts.isLlotheo === this.blackCount > this.whiteCount ? WHITE : BLACK :
-			undefined as never;
+		return this.isEnded
+			? this.blackCount === this.whiteCount
+				? null
+				: this.opts.isLlotheo === (this.blackCount > this.whiteCount)
+					? WHITE
+					: BLACK
+			: undefined as never;
 	}
 }

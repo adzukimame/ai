@@ -30,8 +30,9 @@ export default class extends Module {
 		const today = `${zeroPadding(m + 1, 2)}-${zeroPadding(d, 2)}`;
 
 		const birthFriends = this.ai.friends.find({
-			'user.birthday': { '$regex': new RegExp('-' + today + '$') }
-		} as any);
+			// @ts-expect-error FriendDoc.userにbirthdayプロパティは存在する
+			'user.birthday': { $regex: new RegExp('-' + today + '$') }
+		});
 
 		birthFriends.forEach(f => {
 			const friend = new Friend(this.ai, { doc: f });

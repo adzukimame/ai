@@ -4,9 +4,13 @@ import Message from '@/message.js';
 import serifs from '@/serifs.js';
 import { safeForInterpolate } from '@/utils/safe-for-interpolate.js';
 
+type ContextData = {
+	name: string;
+};
+
 const titles = ['さん', 'くん', '君', 'ちゃん', '様', '先生'];
 
-export default class extends Module {
+export default class extends Module<ContextData, unknown> {
 	public readonly name = 'core';
 
 	@bindThis
@@ -31,7 +35,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private transferBegin(msg: Message): boolean  {
+	private transferBegin(msg: Message): boolean {
 		if (!msg.text) return false;
 		if (!msg.includes(['引継', '引き継ぎ', '引越', '引っ越し'])) return false;
 
@@ -43,7 +47,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private transferEnd(msg: Message): boolean  {
+	private transferEnd(msg: Message): boolean {
 		if (!msg.text) return false;
 		if (!msg.text.startsWith('「') || !msg.text.endsWith('」')) return false;
 
@@ -61,7 +65,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private setName(msg: Message): boolean  {
+	private setName(msg: Message): boolean {
 		if (!msg.text) return false;
 		if (!msg.text.includes('って呼んで')) return false;
 		if (msg.text.startsWith('って呼んで')) return false;
@@ -95,7 +99,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private modules(msg: Message): boolean  {
+	private modules(msg: Message): boolean {
 		if (!msg.text) return false;
 		if (!msg.or(['modules'])) return false;
 
@@ -115,7 +119,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private version(msg: Message): boolean  {
+	private version(msg: Message): boolean {
 		if (!msg.text) return false;
 		if (!msg.or(['v', 'version', 'バージョン'])) return false;
 
@@ -127,7 +131,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async contextHook(key: string, msg: Message, data: any) {
+	private async contextHook(key: string | null, msg: Message, data: ContextData) {
 		if (msg.text == null) return;
 
 		const done = () => {

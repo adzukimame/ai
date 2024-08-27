@@ -5,13 +5,17 @@ import Message from '@/message.js';
 import serifs, { getSerif } from '@/serifs.js';
 import getDate from '@/utils/get-date.js';
 
+/* eslint @stylistic/multiline-ternary: "off" */
+/* eslint @stylistic/operator-linebreak: ["error", "after", { "overrides": { "?": "none", ":": "after" } }] */
+/* eslint @stylistic/indent: ["error", "tab", { "flatTernaryExpressions": true }] */
+
 export default class extends Module {
 	public readonly name = 'talk';
 
 	@bindThis
 	public install() {
 		return {
-			mentionHook: this.mentionHook,
+			mentionHook: this.mentionHook
 		};
 	}
 
@@ -87,9 +91,8 @@ export default class extends Module {
 
 		if (msg.includes(['行ってくる', '行ってきます', 'いってくる', 'いってきます'])) {
 			msg.reply(
-				msg.friend.love >= 7
-					? serifs.core.itterassyai.love(msg.friend.name)
-					: serifs.core.itterassyai.normal(msg.friend.name));
+				msg.friend.love >= 7 ? serifs.core.itterassyai.love(msg.friend.name) :
+				serifs.core.itterassyai.normal(msg.friend.name));
 			incLove();
 			return true;
 		}
@@ -213,7 +216,7 @@ export default class extends Module {
 
 		const data = msg.friend.getPerModulesData(this);
 
-		if (data.lastHuggedAt != null) {
+		if (typeof data.lastHuggedAt === 'number') {
 			if (now - data.lastHuggedAt < (1000 * 60)) return true;
 		}
 

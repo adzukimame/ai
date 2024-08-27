@@ -36,10 +36,12 @@ import PollModule from './modules/poll/index.js';
 import ReminderModule from './modules/reminder/index.js';
 import CheckCustomEmojisModule from './modules/check-custom-emojis/index.js';
 
+/* eslint-disable no-console */
 console.log('   __    ____  _____  ___ ');
 console.log('  /__\\  (_  _)(  _  )/ __)');
 console.log(' /(__)\\  _)(_  )(_)( \\__ \\');
 console.log('(__)(__)(____)(_____)(___/\n');
+/* eslint-enable no-console */
 
 function log(msg: string): void {
 	_log(`[Boot]: ${msg}`);
@@ -49,14 +51,16 @@ log(chalk.bold(`Ai v${pkg._v}`));
 
 process.on('uncaughtException', err => {
 	try {
+		/* eslint-disable no-console */
 		console.error(`Uncaught exception: ${err.message}`);
 		console.dir(err, { colors: true, depth: 2 });
-	} catch { }
+		/* eslint-enable no-console */
+	} catch { /* nop */ }
 });
 
 const apiClient = new misskeyApi.APIClient({
 	origin: config.host,
-	credential: config.i,
+	credential: config.i
 });
 
 promiseRetry(retry => {
@@ -99,8 +103,8 @@ promiseRetry(retry => {
 		...(config.notingEnabled ? [new NotingModule()] : []),
 		...(config.pollEnabled ? [new PollModule()] : []),
 		new ReminderModule(),
-		...(config.checkEmojisEnabled ? [new CheckCustomEmojisModule()] : []),
+		...(config.checkEmojisEnabled ? [new CheckCustomEmojisModule()] : [])
 	]);
-}).catch(e => {
+}).catch(_e => {
 	log(chalk.red('Failed to fetch the account'));
 });

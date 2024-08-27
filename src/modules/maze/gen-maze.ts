@@ -1,6 +1,8 @@
 import gen from 'random-seed';
 import { CellType } from './maze.js';
 
+/* eslint @stylistic/comma-dangle: ["error", "always-multiline"] */
+
 const cellVariants = {
 	void: {
 		digg: { left: null, right: null, top: null, bottom: null },
@@ -71,8 +73,8 @@ const cellVariants = {
 		cross: { left: false, right: false, top: false, bottom: false },
 	},
 } as { [k in CellType]: {
-	digg: { left: CellType | null; right: CellType | null; top: CellType | null; bottom: CellType | null; };
-	cross: { left: boolean; right: boolean; top: boolean; bottom: boolean; };
+	digg: { left: CellType | null; right: CellType | null; top: CellType | null; bottom: CellType | null };
+	cross: { left: boolean; right: boolean; top: boolean; bottom: boolean };
 } };
 
 type Dir = 'left' | 'right' | 'top' | 'bottom';
@@ -118,12 +120,15 @@ export function genMaze(seed: string, complexity?: MazeComplexity) {
 	function checkDiggable(x: number, y: number, dir: Dir) {
 		if (cellVariants[maze[x][y]].digg[dir] === null) return false;
 
-		const newPos =
-			dir === 'top'    ? { x: x, y: y - 1 } :
-			dir === 'bottom' ? { x: x, y: y + 1 } :
-			dir === 'left'   ? { x: x - 1, y: y } :
-			dir === 'right'  ? { x: x + 1, y: y } :
-			{ x, y };
+		const newPos = dir === 'top'
+			? { x: x, y: y - 1 }
+			: dir === 'bottom'
+				? { x: x, y: y + 1 }
+				: dir === 'left'
+					? { x: x - 1, y: y }
+					: dir === 'right'
+						? { x: x + 1, y: y }
+						: { x, y };
 
 		if (newPos.x < 0 || newPos.y < 0 || newPos.x >= mazeSize || newPos.y >= mazeSize) return false;
 
@@ -136,10 +141,10 @@ export function genMaze(seed: string, complexity?: MazeComplexity) {
 	}
 
 	function diggFrom(x: number, y: number, prevDir?: Dir) {
-		const isUpDiggable    = checkDiggable(x, y, 'top');
+		const isUpDiggable = checkDiggable(x, y, 'top');
 		const isRightDiggable = checkDiggable(x, y, 'right');
-		const isDownDiggable  = checkDiggable(x, y, 'bottom');
-		const isLeftDiggable  = checkDiggable(x, y, 'left');
+		const isDownDiggable = checkDiggable(x, y, 'bottom');
+		const isLeftDiggable = checkDiggable(x, y, 'left');
 
 		if (!isUpDiggable && !isRightDiggable && !isDownDiggable && !isLeftDiggable) return;
 

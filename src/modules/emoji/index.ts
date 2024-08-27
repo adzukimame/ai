@@ -31,7 +31,7 @@ const hands = [
 	'💪',
 	['💪', '✌'],
 	'🖕'
-]
+];
 
 const faces = [
 	'😀',
@@ -124,7 +124,7 @@ const faces = [
 	'🗿',
 	'🤖',
 	'👽'
-]
+];
 
 export default class extends Module {
 	public readonly name = 'emoji';

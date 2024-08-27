@@ -32,10 +32,10 @@ export default class extends Module {
 	private async mentionHook(msg: Message) {
 		if (!msg.includes(['数当て', '数あて'])) return false;
 
-		const exist = this.guesses.findOne({
+		/* const exist = this.guesses.findOne({
 			userId: msg.userId,
-			isEnded: false
-		});
+			isEnded: false,
+		}); */
 
 		const secret = Math.floor(Math.random() * 100);
 
@@ -56,7 +56,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async contextHook(key: string, msg: Message) {
+	private async contextHook(key: string | null, msg: Message) {
 		if (msg.text == null) return;
 
 		const exist = this.guesses.findOne({
@@ -64,7 +64,7 @@ export default class extends Module {
 			isEnded: false
 		});
 
-		 // 処理の流れ上、実際にnullになることは無さそうだけど一応
+		// 処理の流れ上、実際にnullになることは無さそうだけど一応
 		if (exist == null) {
 			this.unsubscribeReply(key);
 			return;

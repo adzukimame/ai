@@ -27,7 +27,7 @@ baseConfig.host = new URL(baseConfig.host).origin;
 const config: Config = {
 	...baseConfig,
 	wsUrl: baseConfig.host.replace('http', 'ws'),
-  apiUrl: baseConfig.host + '/api',
+	apiUrl: baseConfig.host + '/api'
 };
 
 export default config as Config;

@@ -1,3 +1,5 @@
+/* eslint @stylistic/comma-dangle: ["error", "always-multiline"] */
+
 export const themes = [{
 	bg1: '#C1D9CE',
 	bg2: '#F2EDD5',
