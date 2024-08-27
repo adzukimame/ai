@@ -1,75 +1,77 @@
 import gen from 'random-seed';
 import { CellType } from './maze.js';
 
+/* eslint @stylistic/comma-dangle: ["error", "always-multiline"] */
+
 const cellVariants = {
 	void: {
 		digg: { left: null, right: null, top: null, bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	empty: {
 		digg: { left: 'left', right: 'right', top: 'top', bottom: 'bottom' },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	left: {
 		digg: { left: null, right: 'leftRight', top: 'leftTop', bottom: 'leftBottom' },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	right: {
 		digg: { left: 'leftRight', right: null, top: 'rightTop', bottom: 'rightBottom' },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	top: {
 		digg: { left: 'leftTop', right: 'rightTop', top: null, bottom: 'topBottom' },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	bottom: {
 		digg: { left: 'leftBottom', right: 'rightBottom', top: 'topBottom', bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	leftTop: {
 		digg: { left: null, right: 'leftRightTop', top: null, bottom: 'leftTopBottom' },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	leftBottom: {
 		digg: { left: null, right: 'leftRightBottom', top: 'leftTopBottom', bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	rightTop: {
 		digg: { left: 'leftRightTop', right: null, top: null, bottom: 'rightTopBottom' },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	rightBottom: {
 		digg: { left: 'leftRightBottom', right: null, top: 'rightTopBottom', bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	leftRightTop: {
 		digg: { left: null, right: null, top: null, bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	leftRightBottom: {
 		digg: { left: null, right: null, top: null, bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	leftTopBottom: {
 		digg: { left: null, right: null, top: null, bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	rightTopBottom: {
 		digg: { left: null, right: null, top: null, bottom: null },
-		cross: { left: false, right: false, top: false, bottom: false }
+		cross: { left: false, right: false, top: false, bottom: false },
 	},
 	leftRight: {
 		digg: { left: null, right: null, top: 'leftRightTop', bottom: 'leftRightBottom' },
-		cross: { left: false, right: false, top: true, bottom: true }
+		cross: { left: false, right: false, top: true, bottom: true },
 	},
 	topBottom: {
 		digg: { left: 'leftTopBottom', right: 'rightTopBottom', top: null, bottom: null },
-		cross: { left: true, right: true, top: false, bottom: false }
+		cross: { left: true, right: true, top: false, bottom: false },
 	},
 	cross: {
 		digg: { left: 'cross', right: 'cross', top: 'cross', bottom: 'cross' },
-		cross: { left: false, right: false, top: false, bottom: false }
-	}
+		cross: { left: false, right: false, top: false, bottom: false },
+	},
 } as { [k in CellType]: {
 	digg: { left: CellType | null; right: CellType | null; top: CellType | null; bottom: CellType | null };
 	cross: { left: boolean; right: boolean; top: boolean; bottom: boolean };
