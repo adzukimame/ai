@@ -50,11 +50,11 @@ export default class extends Module {
 
 		let chart;
 
-		if (type === 'userNotes') {
+		if (type === 'userNotes' && params !== undefined) {
 			const data = await this.ai.api('charts/user/notes', {
 				span: 'day',
 				limit: 30,
-				userId: params?.user.id!
+				userId: params.user.id
 			});
 
 			chart = {
@@ -67,11 +67,11 @@ export default class extends Module {
 					data: data.diffs.renote
 				}]
 			};
-		} else if (type === 'followers') {
+		} else if (type === 'followers' && params !== undefined) {
 			const data = await this.ai.api('charts/user/following', {
 				span: 'day',
 				limit: 30,
-				userId: params?.user.id!
+				userId: params.user.id
 			});
 
 			chart = {
@@ -85,7 +85,7 @@ export default class extends Module {
 		} else if (type === 'notes') {
 			const data = await this.ai.api('charts/notes', {
 				span: 'day',
-				limit: 30,
+				limit: 30
 			});
 
 			chart = {
@@ -104,10 +104,10 @@ export default class extends Module {
 			const diffRange = 150;
 			const datasetCount = 1 + Math.floor(Math.random() * 3);
 
-			let datasets: { data: number[] }[] = [];
+			const datasets: { data: number[] }[] = [];
 
 			for (let d = 0; d < datasetCount; d++) {
-				let values = [Math.random() * 1000];
+				const values = [Math.random() * 1000];
 
 				for (let i = 1; i < limit; i++) {
 					const prev = values[i - 1];

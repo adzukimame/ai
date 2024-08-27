@@ -200,7 +200,7 @@ export const itemPrefixes = [
 	'燃え盛る',
 	'高圧',
 	'異常',
-	'粗挽き',
+	'粗挽き'
 ];
 
 export const items = [
@@ -446,7 +446,7 @@ export const items = [
 	'グレーチング',
 	'繝九Λ縺ｮ縺ｿ縺晄ｱ',
 	'スーパーカミオカンデ',
-	'デースケドガー',
+	'デースケドガー'
 ];
 
 export const and = [
@@ -456,7 +456,7 @@ export const and = [
 	'に見せかけて',
 	'を虐げる',
 	'を侍らせた',
-	'が上に乗った',
+	'が上に乗った'
 ];
 
 export function genItem(seedOrRng?: (() => number) | string | number) {

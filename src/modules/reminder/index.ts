@@ -8,11 +8,15 @@ import config from '@/config.js';
 
 const NOTIFY_INTERVAL = 1000 * 60 * 60 * 12;
 
-type TimeoutCallbackData = {
-	id: Message['id'],
+type ContextData = {
+	id: Message['id'];
 };
 
-export default class extends Module {
+type TimerData = {
+	id: Message['id'];
+};
+
+export default class extends Module<ContextData, TimerData> {
 	public readonly name = 'reminder';
 
 	private reminds: loki.Collection<{
@@ -33,7 +37,7 @@ export default class extends Module {
 		return {
 			mentionHook: this.mentionHook,
 			contextHook: this.contextHook,
-			timeoutCallback: this.timeoutCallback,
+			timeoutCallback: this.timeoutCallback
 		};
 	}
 
@@ -44,7 +48,7 @@ export default class extends Module {
 
 		if (text.startsWith('reminds') || text.startsWith('todos')) {
 			const reminds = this.reminds.find({
-				userId: msg.userId,
+				userId: msg.userId
 			});
 
 			const getQuoteLink = (id: string | null) => `[${id}](${config.host}/notes/${id})`;
@@ -62,11 +66,11 @@ export default class extends Module {
 		const separatorIndex = text.indexOf(' ') > -1 ? text.indexOf(' ') : text.indexOf('\n');
 		const thing = text.substr(separatorIndex + 1).trim();
 
-		if (thing === '' && msg.quoteId == null || msg.visibility === 'followers') {
+		if ((thing === '' && msg.quoteId == null) || msg.visibility === 'followers') {
 			msg.reply(serifs.reminder.invalid);
 			return {
 				reaction: '🆖',
-				immediate: true,
+				immediate: true
 			};
 		}
 
@@ -76,7 +80,7 @@ export default class extends Module {
 			thing: thing === '' ? null : thing,
 			quoteId: msg.quoteId ?? null,
 			times: 0,
-			createdAt: Date.now(),
+			createdAt: Date.now()
 		});
 
 		// メンションをsubscribe
@@ -93,21 +97,21 @@ export default class extends Module {
 
 		// タイマーセット
 		this.setTimeoutWithPersistence(NOTIFY_INTERVAL, {
-			id: remind!.id,
-		} as TimeoutCallbackData);
+			id: remind!.id
+		} as TimerData);
 
 		return {
 			reaction: '🆗',
-			immediate: true,
+			immediate: true
 		};
 	}
 
 	@bindThis
-	private async contextHook(key: string, msg: Message, data: any) {
+	private async contextHook(key: string | null, msg: Message, data: ContextData) {
 		if (msg.text == null) return;
 
 		const remind = this.reminds.findOne({
-			id: data.id,
+			id: data.id
 		});
 
 		if (remind == null) {
@@ -133,7 +137,7 @@ export default class extends Module {
 	}
 
 	@bindThis
-	private async timeoutCallback(data: TimeoutCallbackData) {
+	private async timeoutCallback(data: TimerData) {
 		const remind = this.reminds.findOne({
 			id: data.id
 		});
@@ -153,7 +157,8 @@ export default class extends Module {
 			});
 		} catch (err) {
 			// renote対象が消されていたらリマインダー解除
-			if ((err as any).code === 'NO_SUCH_RENOTE_TARGET') {
+			// @ts-expect-error プロパティcodeはobject型に存在しない
+			if (err && typeof err === 'object' && err.code === 'NO_SUCH_RENOTE_TARGET') {
 				this.unsubscribeReply(remind.thing == null && remind.quoteId ? remind.quoteId : remind.id);
 				this.reminds.remove(remind);
 				return;
@@ -167,7 +172,7 @@ export default class extends Module {
 
 		// タイマーセット
 		this.setTimeoutWithPersistence(NOTIFY_INTERVAL, {
-			id: remind.id,
-		} as TimeoutCallbackData);
+			id: remind.id
+		} as TimerData);
 	}
 }

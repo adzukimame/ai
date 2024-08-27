@@ -4,7 +4,6 @@ import loki from 'lokijs';
 import Module from '@/module.js';
 import config from '@/config.js';
 import serifs from '@/serifs.js';
-import type { Note } from 'misskey-js/entities.js';
 import { mecab } from './mecab.js';
 
 function kanaToHira(str: string) {
@@ -27,7 +26,7 @@ export default class extends Module {
 		if (!config.keywordEnabled) return {};
 
 		this.learnedKeywords = this.ai.getCollection('_keyword_learnedKeywords', {
-			indices: ['userId']
+			indices: ['keyword']
 		});
 
 		setInterval(this.learn, 1000 * 60 * 60);
@@ -40,19 +39,19 @@ export default class extends Module {
 		const tl = (await Promise.all([
 			this.ai.api('notes/local-timeline', {
 				limit: 30,
-				withRenotes: false,
+				withRenotes: false
 			}),
 			this.ai.api('notes/timeline', {
 				limit: 30,
-				withRenotes: false,
-			}),
+				withRenotes: false
+			})
 		])).flat();
 
 		const interestedNotes = tl.filter(note =>
 			note.userId !== this.ai.account.id &&
 			note.text != null &&
 			note.cw == null &&
-			note.visibility != 'followers' && 
+			note.visibility != 'followers' &&
 			note.visibility != 'specified');
 
 		let keywords: string[][] = [];
@@ -60,16 +59,16 @@ export default class extends Module {
 		let jaEnDic: string | undefined = undefined;
 		try {
 			jaEnDic = readFileSync(`${import.meta.dirname}/../../../google-ime-user-dictionary-ja-en.txt`).toString();
-		} catch {}
+		} catch { /* nop */ }
 
 		for (const note of interestedNotes) {
 			const tokens = await mecab(note.text as string, config.mecab, config.mecabDic);
-			const keywordsInThisNote = tokens.filter(token => token[2] == '固有名詞' && (token[8] != null || (jaEnDic !== undefined && new RegExp(`^([^\\t]+)\\t${ token[0] }(?=\\t)`, 'im').test(jaEnDic))));
+			const keywordsInThisNote = tokens.filter(token => token[2] == '固有名詞' && (token[8] != null || (jaEnDic !== undefined && new RegExp(`^([^\\t]+)\\t${token[0]}(?=\\t)`, 'im').test(jaEnDic))));
 			keywords = keywords.concat(keywordsInThisNote);
 		}
 
 		if (keywords.length === 0) {
-			this.log('No keywords found.')
+			this.log('No keywords found.');
 			return;
 		}
 
@@ -96,7 +95,7 @@ export default class extends Module {
 			});
 
 			text = serifs.keyword.learned(keyword[0], kanaToHira(
-				keyword[8] ?? new RegExp(`^([^\\t]+)\\t${ keyword[0] }(?=\\t)`, 'im').exec(jaEnDic!)![1]
+				keyword[8] ?? new RegExp(`^([^\\t]+)\\t${keyword[0]}(?=\\t)`, 'im').exec(jaEnDic!)![1]
 			));
 		}
 

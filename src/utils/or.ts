@@ -1,6 +1,6 @@
 import { hankakuToZenkaku, katakanaToHiragana } from './japanese.js';
 
-export default function(text: string, words: (string | RegExp)[]): boolean {
+export default function (text: string, words: (string | RegExp)[]): boolean {
 	if (text == null) return false;
 
 	text = katakanaToHiragana(hankakuToZenkaku(text));
@@ -58,4 +58,3 @@ export default function(text: string, words: (string | RegExp)[]): boolean {
 		}
 	});
 }
-

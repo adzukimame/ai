@@ -40,7 +40,7 @@ export default class extends Module {
 		const customEmojis = note.text.match(/:([\w+-]+?):/g);
 		if (customEmojis) {
 			// カスタム絵文字が複数種類ある場合はキャンセル
-			if (!customEmojis.every((val, i, arr) => val === arr[0])) return;
+			if (!customEmojis.every((val, _i, arr) => val === arr[0])) return;
 
 			this.log(`Custom emoji detected - ${customEmojis[0]}`);
 
@@ -50,11 +50,11 @@ export default class extends Module {
 		const emojis = parse(note.text).map(x => x.text);
 		if (emojis.length > 0) {
 			// 絵文字が複数種類ある場合はキャンセル
-			if (!emojis.every((val, i, arr) => val === arr[0])) return;
+			if (!emojis.every((val, _i, arr) => val === arr[0])) return;
 
 			this.log(`Emoji detected - ${emojis[0]}`);
 
-			let reaction = emojis[0];
+			const reaction = emojis[0];
 
 			switch (reaction) {
 				case '✊': return react('🖐', true);

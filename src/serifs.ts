@@ -1,5 +1,8 @@
 // せりふ
 
+/* eslint @stylistic/operator-linebreak: ["error", "after", { "overrides": { "?": "none", ":": "none" } }] */
+/* eslint @stylistic/multiline-ternary: ["error", "never"] */
+
 export default {
 	core: {
 		setNameOk: (name: string) => `わかりました。これからは${name}とお呼びしますね！`,
@@ -49,7 +52,7 @@ export default {
 			] : [
 				`${thing}でえらいです！`,
 				`${thing}でえらいですよ～♪`
-			],
+			]
 		},
 
 		okaeri: {
@@ -63,13 +66,13 @@ export default {
 
 			love2: (name: string | null | undefined) => name ? `おかえりなさいませ♡♡♡${name}っっ♡♡♡♡♡` : 'おかえりなさいませ♡♡♡ご主人様っっ♡♡♡♡♡',
 
-			normal: (name: string | null | undefined) => name ? `おかえりなさい、${name}！` : 'おかえりなさい！',
+			normal: (name: string | null | undefined) => name ? `おかえりなさい、${name}！` : 'おかえりなさい！'
 		},
 
 		itterassyai: {
 			love: (name: string | null | undefined) => name ? `いってらっしゃい、${name}♪` : 'いってらっしゃい♪',
 
-			normal: (name: string | null | undefined) => name ? `いってらっしゃい、${name}！` : 'いってらっしゃい！',
+			normal: (name: string | null | undefined) => name ? `いってらっしゃい、${name}！` : 'いってらっしゃい！'
 		},
 
 		tooLong: '長すぎる気がします...',
@@ -89,7 +92,7 @@ export default {
 
 			hate3: '近寄らないでください',
 
-			hate4: 'やめてください。通報しますよ？',
+			hate4: 'やめてください。通報しますよ？'
 		},
 
 		kawaii: {
@@ -139,7 +142,7 @@ export default {
 
 			love1: 'わん！',
 
-			love2: 'わんわん♪',
+			love2: 'わんわん♪'
 		},
 
 		shutdown: '私まだ眠くないですよ...？',
@@ -150,7 +153,7 @@ export default {
 
 		transferFailed: 'うーん、合言葉が間違ってませんか...？',
 
-		transferDone: (name: string | null | undefined) => name ? `はっ...！ おかえりなさい、${name}！` : `はっ...！ おかえりなさい！`,
+		transferDone: (name: string | null | undefined) => name ? `はっ...！ おかえりなさい、${name}！` : `はっ...！ おかえりなさい！`
 	},
 
 	keyword: {
@@ -164,7 +167,7 @@ export default {
 	},
 
 	birthday: {
-		happyBirthday: (name: string | null | undefined) => name ? `お誕生日おめでとうございます、${name}🎉` : 'お誕生日おめでとうございます🎉',
+		happyBirthday: (name: string | null | undefined) => name ? `お誕生日おめでとうございます、${name}🎉` : 'お誕生日おめでとうございます🎉'
 	},
 
 	/**
@@ -229,7 +232,7 @@ export default {
 		/**
 		 * 接待してたら相手が投了したとき
 		 */
-		settaiButYouSurrendered: (name: string) => `(${name}を接待していたら投了されちゃいました... ごめんなさい)`,
+		settaiButYouSurrendered: (name: string) => `(${name}を接待していたら投了されちゃいました... ごめんなさい)`
 	},
 
 	/**
@@ -284,7 +287,7 @@ export default {
 		/**
 		 * 正解したとき
 		 */
-		congrats: (tries: string) => `正解です🎉 (${tries}回目で当てました)`,
+		congrats: (tries: string) => `正解です🎉 (${tries}回目で当てました)`
 	},
 
 	/**
@@ -310,14 +313,14 @@ export default {
 	 * 絵文字生成
 	 */
 	emoji: {
-		suggest: (emoji: string) => `こんなのはどうですか？→${emoji}`,
+		suggest: (emoji: string) => `こんなのはどうですか？→${emoji}`
 	},
 
 	/**
 	 * 占い
 	 */
 	fortune: {
-		cw: (name: string | null | undefined) => name ? `私が今日の${name}の運勢を占いました...` : '私が今日のあなたの運勢を占いました...',
+		cw: (name: string | null | undefined) => name ? `私が今日の${name}の運勢を占いました...` : '私が今日のあなたの運勢を占いました...'
 	},
 
 	/**
@@ -350,21 +353,21 @@ export default {
 		done: (name: string | null | undefined) => name ? [
 			`よく出来ました、${name}♪`,
 			`${name}、さすがですっ！`,
-			`${name}、えらすぎます...！`,
+			`${name}、えらすぎます...！`
 		] : [
 			`よく出来ました♪`,
 			`さすがですっ！`,
-			`えらすぎます...！`,
+			`えらすぎます...！`
 		],
 
-		cancel: `わかりました。`,
+		cancel: `わかりました。`
 	},
 
 	/**
 	 * バレンタイン
 	 */
 	valentine: {
-		chocolateForYou: (name: string | null | undefined) => name ? `${name}、その... チョコレート作ったのでよかったらどうぞ！🍫` : 'チョコレート作ったのでよかったらどうぞ！🍫',
+		chocolateForYou: (name: string | null | undefined) => name ? `${name}、その... チョコレート作ったのでよかったらどうぞ！🍫` : 'チョコレート作ったのでよかったらどうぞ！🍫'
 	},
 
 	server: {
@@ -390,7 +393,7 @@ export default {
 
 	sleepReport: {
 		report: (hours: number) => `んぅ、${hours}時間くらい寝ちゃってたみたいです`,
-		reportUtatane: 'ん... うたた寝しちゃってました',
+		reportUtatane: 'ん... うたた寝しちゃってました'
 	},
 
 	noting: {
@@ -467,12 +470,12 @@ export default {
 			'にゃふぅ',
 			'藍が来ましたよ～',
 			'じー',
-			'はにゃ？',
+			'はにゃ？'
 		],
 		want: (item: string) => `${item}、欲しいなぁ...`,
 		see: (item: string) => `お散歩していたら、道に${item}が落ちているのを見たんです！`,
-		expire: (item: string) => `気づいたら、${item}の賞味期限が切れてました…`,
-	},
+		expire: (item: string) => `気づいたら、${item}の賞味期限が切れてました…`
+	}
 };
 
 export function getSerif(variant: string | string[]): string {

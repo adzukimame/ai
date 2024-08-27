@@ -8,7 +8,7 @@ const invalidChars = [
 	'[',
 	']',
 	' ',
-	'　',
+	'　'
 ];
 
 export function safeForInterpolate(text: string): boolean {

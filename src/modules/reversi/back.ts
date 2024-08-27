@@ -12,7 +12,7 @@ import type { UserLite, MeDetailed, Note, ReversiGameDetailed, ReversiMatchRespo
 import * as Reversi from './engine.js';
 import config from '@/config.js';
 import serifs from '@/serifs.js';
-import type { Form } from './index.js';
+import type { Form, ReversiMessage } from './index.js';
 
 function getUserName(user: Pick<UserLite, 'name' | 'username'>) {
 	return user.name || user.username;
@@ -27,7 +27,7 @@ const titles = [
 
 const apiClient = new misskeyApi.APIClient({
 	origin: config.host,
-	credential: config.i,
+	credential: config.i
 });
 
 class Session {
@@ -94,26 +94,34 @@ class Session {
 		process.on('message', this.onMessage);
 	}
 
-	private onMessage = async (msg: any) => {
+	private onMessage = async (msg: ReversiMessage) => {
 		switch (msg.type) {
-			case '_init_': this.onInit(msg.body); break;
-			case 'started': this.onStarted(msg.body); break;
-			case 'ended': this.onEnded(msg.body); break;
-			case 'log': this.onLog(msg.body); break;
+			case '_init_':
+				this.onInit(msg.body);
+				break;
+			case 'started':
+				this.onStarted(msg.body);
+				break;
+			case 'ended':
+				this.onEnded(msg.body);
+				break;
+			case 'log':
+				this.onLog(msg.body);
+				break;
 		}
-	}
+	};
 
 	// 親プロセスからデータをもらう
-	private onInit = (msg: { game: ReversiMatchResponse, form: Form, account: MeDetailed }) => {
+	private onInit = (msg: { game: ReversiMatchResponse; form: Form; account: MeDetailed }) => {
 		this.game = msg.game;
 		this.form = msg.form;
 		this.account = msg.account;
-	}
+	};
 
 	/**
 	 * 対局が始まったとき
 	 */
-	private onStarted = (msg: Parameters<Channels['reversiGame']['events']['started']>[0]) =>  {
+	private onStarted = (msg: Parameters<Channels['reversiGame']['events']['started']>[0]) => {
 		this.game = msg.game;
 		if (this.game.canPutEverywhere) { // 対応してない
 			process.send!({
@@ -168,7 +176,7 @@ class Session {
 				// -+-
 				//
 				(get(x - 1, y) == 'empty' && get(x + 1, y) == 'empty')
-			)
+			);
 
 			const isSumi = !isNotSumi;
 
@@ -188,6 +196,7 @@ class Session {
 				return this.sumiIndexes.includes(this.engine.xyToPos(x, y));
 			};
 
+			/* eslint-disable @stylistic/no-multi-spaces, @stylistic/comma-spacing, @stylistic/space-in-parens */
 			const isSumiNear = (
 				check(x - 1, y - 1) || // 左上
 				check(x    , y - 1) || // 上
@@ -197,7 +206,8 @@ class Session {
 				check(x    , y + 1) || // 下
 				check(x - 1, y + 1) || // 左下
 				check(x - 1, y    )    // 左
-			)
+			);
+			/* eslint-enable @stylistic/no-multi-spaces, @stylistic/comma-spacing, @stylistic/space-in-parens */
 
 			if (isSumiNear) this.sumiNearIndexes.push(i);
 		});
@@ -205,17 +215,17 @@ class Session {
 
 		//#endregion
 
-		this.botColor = this.game.user1Id == this.account.id && this.game.black == 1 || this.game.user2Id == this.account.id && this.game.black == 2;
+		this.botColor = (this.game.user1Id == this.account.id && this.game.black == 1) || (this.game.user2Id == this.account.id && this.game.black == 2);
 
 		if (this.botColor) {
 			this.think();
 		}
-	}
+	};
 
 	/**
 	 * 対局が終わったとき
 	 */
-	private onEnded = async (msg: Parameters<Channels['reversiGame']['events']['ended']>[0]) =>  {
+	private onEnded = async (msg: Parameters<Channels['reversiGame']['events']['ended']>[0]) => {
 		// ストリームから切断
 		process.send!({
 			type: 'ended'
@@ -248,7 +258,7 @@ class Session {
 		await this.post(text, this.startedNote);
 
 		process.exit();
-	}
+	};
 
 	/**
 	 * 打たれたとき
@@ -270,7 +280,7 @@ class Session {
 					break;
 			}
 		}
-	}
+	};
 
 	/**
 	 * Botにとってある局面がどれだけ有利か静的に評価する
@@ -309,11 +319,11 @@ class Session {
 		if (this.isSettai) score = -score;
 
 		return score;
-	}
+	};
 
 	private think = () => {
-		console.log(`(${this.currentTurn}/${this.maxTurn}) Thinking...`);
-		console.time('think');
+		console.log(`(${this.currentTurn}/${this.maxTurn}) Thinking...`); // eslint-disable-line no-console
+		console.time('think'); // eslint-disable-line no-console
 
 		// 接待モードのときは、全力(5手先読みくらい)で負けるようにする
 		// TODO: 接待のときは、どちらかというと「自分が不利になる手を選ぶ」というよりは、「相手に角を取らせられる手を選ぶ」ように思考する
@@ -404,8 +414,8 @@ class Session {
 		const scores = cans.map(p => dive(p));
 		const pos = cans[scores.indexOf(Math.max(...scores))];
 
-		console.log('Thinked:', pos);
-		console.timeEnd('think');
+		console.log('Thinked:', pos); // eslint-disable-line no-console
+		console.timeEnd('think'); // eslint-disable-line no-console
 
 		this.engine.putStone(pos);
 		this.currentTurn++;
@@ -423,7 +433,7 @@ class Session {
 				this.think();
 			}
 		}, 500);
-	}
+	};
 
 	/**
 	 * 対局が始まったことをMisskeyに投稿します
@@ -434,7 +444,7 @@ class Session {
 			: serifs.reversi.started(this.userName, this.strength.toString());
 
 		return await this.post(`${text}\n→[観戦する](${this.url})`);
-	}
+	};
 
 	/**
 	 * Misskeyに投稿します
@@ -446,18 +456,18 @@ class Session {
 				const res = await apiClient.request('notes/create', {
 					text: text,
 					visibility: 'home',
-					...(renote ? { renoteId: renote.id } : {}),
+					...(renote ? { renoteId: renote.id } : {})
 				});
 
 				return res.createdNote;
 			} catch (e) {
-				console.error(e);
+				console.error(e); // eslint-disable-line no-console
 				return null;
 			}
 		} else {
 			return null;
 		}
-	}
+	};
 }
 
 new Session();

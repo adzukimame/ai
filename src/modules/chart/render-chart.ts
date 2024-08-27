@@ -17,7 +17,7 @@ const colors = {
 		'#c2f725',
 		'#69d2e7',
 		'#f38630',
-		'#f9d423',
+		'#f9d423'
 	]
 };
 
@@ -42,9 +42,9 @@ export function renderChart(chart: Chart) {
 	ctx.beginPath();
 	ctx.fillRect(0, 0, width, height);
 
-	let chartAreaX = margin;
+	const chartAreaX = margin;
 	let chartAreaY = margin;
-	let chartAreaWidth = width - (margin * 2);
+	const chartAreaWidth = width - (margin * 2);
 	let chartAreaHeight = height - (margin * 2);
 
 	// Draw title
@@ -203,7 +203,7 @@ function niceScale(lowerBound: number, upperBound: number, ticks: number): numbe
 	const ub = stepSize * Math.ceil(upperBound / stepSize);
 	// Build array
 	let val = lb;
-	while (1) {
+	while (true) {
 		steps.push(val);
 		val += stepSize;
 		if (val > ub) {

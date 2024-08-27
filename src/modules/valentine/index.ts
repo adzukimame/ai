@@ -26,7 +26,7 @@ export default class extends Module {
 
 		const date = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
 
-		const friends = this.ai.friends.find({} as any);
+		const friends = this.ai.friends.find({});
 
 		friends.forEach(f => {
 			const friend = new Friend(this.ai, { doc: f });
