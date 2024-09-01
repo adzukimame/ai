@@ -2,11 +2,9 @@ import pluginJs from '@eslint/js';
 import tsEslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 
-/* eslint @stylistic/comma-dangle: ["error", "always-multiline"] */
-
 export default [
 	{
-		files: ['**/*.{js,mjs,ts}'],
+		files: ['**/*.{js,mjs,ts}']
 	},
 	stylistic.configs['recommended-flat'],
 	pluginJs.configs.recommended,
@@ -19,13 +17,13 @@ export default [
 			'@stylistic/member-delimiter-style': ['error', {
 				multiline: {
 					delimiter: 'semi',
-					requireLast: true,
+					requireLast: true
 				},
 				singleline: {
 					delimiter: 'semi',
-					requireLast: false,
+					requireLast: false
 				},
-				multilineDetection: 'brackets',
+				multilineDetection: 'brackets'
 			}],
 			'@typescript-eslint/no-unused-vars': ['error', {
 				args: 'all',
@@ -34,26 +32,26 @@ export default [
 				caughtErrorsIgnorePattern: '^_',
 				destructuredArrayIgnorePattern: '^_',
 				varsIgnorePattern: '^_',
-				ignoreRestSiblings: true,
+				ignoreRestSiblings: true
 			}],
 			'@stylistic/indent': ['error', 'tab'],
 			'@stylistic/no-tabs': ['error', {
-				allowIndentationTabs: true,
+				allowIndentationTabs: true
 			}],
 			'@stylistic/brace-style': ['error', '1tbs'],
 			'@stylistic/operator-linebreak': ['error', 'before', {
 				overrides: {
 					'||': 'after',
-					'&&': 'after',
-				},
+					'&&': 'after'
+				}
 			}],
 			'@stylistic/arrow-parens': ['error', 'as-needed'],
 			'@stylistic/spaced-comment': ['error', 'always', {
-				markers: ['#region', '#endregion'],
-			}],
-		},
+				markers: ['#region', '#endregion']
+			}]
+		}
 	},
 	{
-		ignores: ['built/*'],
-	},
+		ignores: ['built/*']
+	}
 ];
