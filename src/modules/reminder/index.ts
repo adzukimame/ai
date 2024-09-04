@@ -4,7 +4,6 @@ import Module from '@/module.js';
 import Message from '@/message.js';
 import serifs, { getSerif } from '@/serifs.js';
 import { acct } from '@/utils/acct.js';
-import config from '@/config.js';
 
 const NOTIFY_INTERVAL = 1000 * 60 * 60 * 12;
 
@@ -51,7 +50,7 @@ export default class extends Module<ContextData, TimerData> {
 				userId: msg.userId
 			});
 
-			const getQuoteLink = (id: string | null) => `[${id}](${config.host}/notes/${id})`;
+			const getQuoteLink = (id: string | null) => `[${id}](${this.ai.getConfig('host')}/notes/${id})`;
 
 			msg.reply(serifs.reminder.reminds + '\n' + reminds.map(remind => `・${remind.thing ? remind.thing : getQuoteLink(remind.quoteId)}`).join('\n'));
 			return true;

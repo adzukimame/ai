@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs';
 import { bindThis } from '@/decorators.js';
 import loki from 'lokijs';
 import Module from '@/module.js';
-import config from '@/config.js';
 import serifs from '@/serifs.js';
 import { mecab } from './mecab.js';
 
@@ -23,7 +22,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		if (!config.keywordEnabled) return {};
+		if (!this.ai.getConfig('keywordEnabled')) return {};
 
 		this.learnedKeywords = this.ai.getCollection('_keyword_learnedKeywords', {
 			indices: ['keyword']
@@ -62,7 +61,7 @@ export default class extends Module {
 		} catch { /* nop */ }
 
 		for (const note of interestedNotes) {
-			const tokens = await mecab(note.text as string, config.mecab, config.mecabDic);
+			const tokens = await mecab(note.text as string, this.ai.getConfig('mecab'), this.ai.getConfig('mecabDic'));
 			const keywordsInThisNote = tokens.filter(token => token[2] == '固有名詞' && (token[8] != null || (jaEnDic !== undefined && new RegExp(`^([^\\t]+)\\t${token[0]}(?=\\t)`, 'im').test(jaEnDic))));
 			keywords = keywords.concat(keywordsInThisNote);
 		}

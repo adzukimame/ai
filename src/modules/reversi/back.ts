@@ -10,7 +10,6 @@ import { api as misskeyApi } from 'misskey-js';
 import type { Channels } from 'misskey-js';
 import type { UserLite, MeDetailed, Note, ReversiGameDetailed, ReversiMatchResponse } from 'misskey-js/entities.js';
 import * as Reversi from './engine.js';
-import config from '@/config.js';
 import serifs from '@/serifs.js';
 import type { Form, ReversiMessage } from './index.js';
 
@@ -25,17 +24,15 @@ const titles = [
 	'先生', 'せんせい', 'センセイ', 'ｾﾝｾｲ'
 ];
 
-const apiClient = new misskeyApi.APIClient({
-	origin: config.host,
-	credential: config.i
-});
-
 class Session {
 	private account: MeDetailed;
+	private host: string;
+	private i: string;
 	private game: ReversiGameDetailed;
 	private form: Form;
 	private engine: Reversi.Game;
 	private botColor: Reversi.Color;
+	private apiClient: misskeyApi.APIClient;
 
 	private appliedOps: string[] = [];
 
@@ -71,7 +68,7 @@ class Session {
 	private get userName(): string {
 		let name = getUserName(this.user);
 		if (name.includes('$') || name.includes('<') || name.includes('*')) name = this.user.username;
-		return `?[${name}](${config.host}/@${this.user.username})${titles.some(x => name.endsWith(x)) ? '' : 'さん'}`;
+		return `?[${name}](${this.host}/@${this.user.username})${titles.some(x => name.endsWith(x)) ? '' : 'さん'}`;
 	}
 
 	private get strength(): number {
@@ -87,7 +84,7 @@ class Session {
 	}
 
 	private get url(): string {
-		return `${config.host}/reversi/g/${this.game.id}`;
+		return `${this.host}/reversi/g/${this.game.id}`;
 	}
 
 	constructor() {
@@ -112,10 +109,16 @@ class Session {
 	};
 
 	// 親プロセスからデータをもらう
-	private onInit = (msg: { game: ReversiMatchResponse; form: Form; account: MeDetailed }) => {
+	private onInit = (msg: { game: ReversiMatchResponse; form: Form; account: MeDetailed; host: string; i: string }) => {
 		this.game = msg.game;
 		this.form = msg.form;
 		this.account = msg.account;
+		this.host = msg.host;
+		this.i = msg.i;
+		this.apiClient = new misskeyApi.APIClient({
+			origin: this.host,
+			credential: this.i
+		});
 	};
 
 	/**
@@ -453,7 +456,7 @@ class Session {
 	private post = async (text: string, renote?: Note | null): Promise<Note | null> => {
 		if (this.allowPost) {
 			try {
-				const res = await apiClient.request('notes/create', {
+				const res = await this.apiClient.request('notes/create', {
 					text: text,
 					visibility: 'home',
 					...(renote ? { renoteId: renote.id } : {})

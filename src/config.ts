@@ -1,4 +1,4 @@
-type Config = {
+export type Config = {
 	host: string;
 	serverName?: string;
 	i: string;

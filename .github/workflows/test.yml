@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - develop-mame
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: corepack enable
+      - run: npm install
+      - name: Cache docker images of test server
+        id: cache-docker-images
+        uses: actions/cache@v4
+        with:
+          path: docker-images-test-server
+          key: docker-images-test-server-${{ hashFiles('./test/misskey/compose.yml') }}
+      - name: Pull and save docker images
+        if: steps.cache-docker-images.outputs.cache-hit != 'true'
+        run: |
+          docker pull misskey/misskey:2024.8.0
+          docker pull redis:7-alpine
+          docker pull postgres:15-alpine
+          docker save -o docker-images-test-server misskey/misskey:2024.8.0 redis:7-alpine postgres:15-alpine
+      - name: Load docker images from cache
+        run: docker load -i docker-images-test-server
+      - name: Run server container
+        run: pushd ./test/misskey && docker compose up -d && popd
+      - name: Wait until container accepts requests
+        run: ./test/misskey/healthcheck.sh
+      - name: Test
+        run: npm run test

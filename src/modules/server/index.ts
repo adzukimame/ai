@@ -1,7 +1,6 @@
 import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
-import config from '@/config.js';
 import type { ServerStats } from 'misskey-js/entities.js';
 import { Channels, ChannelConnection } from 'misskey-js';
 
@@ -20,7 +19,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		if (!config.serverMonitoring) return {};
+		if (!this.ai.getConfig('serverMonitoring')) return {};
 
 		this.connection = this.ai.connection.useChannel('serverStats');
 		this.connection.on('stats', this.onStats);
