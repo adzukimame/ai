@@ -22,7 +22,8 @@ Misskey用の日本語Botです。
 	"serverMonitoring": "サーバー監視の機能を有効にする場合は true を入れる (無効にする場合は false)",
 	"checkEmojisEnabled": "カスタム絵文字チェック機能を有効にする場合は true を入れる (無効にする場合は false)",
 	"checkEmojisAtOnce": "カスタム絵文字チェック機能で投稿をまとめる場合は true を入れる (まとめない場合は false)",
-	"mazeEnabled": "迷路の生成を無効化する場合は false を入れてください",
+	"mazeDisabled": "迷路の生成を無効にする場合は true を入れてください",
+	"pollDisabled": "アンケートを無効にする場合は true を入れてください",
 	"mecab": "MeCab のインストールパス (ソースからインストールした場合、大体は /usr/local/bin/mecab)",
 	"mecabDic": "MeCab の辞書ファイルパス (オプション)",
 	"memoryDir": "memory.jsonの保存先（オプション、デフォルトは'.'（レポジトリのルートです））"
@@ -47,7 +48,8 @@ Misskey用の日本語Botです。
 	"serverMonitoring": "サーバー監視の機能を有効にする場合は true を入れる (無効にする場合は false)",
 	"checkEmojisEnabled": "カスタム絵文字チェック機能を有効にする場合は true を入れる (無効にする場合は false)",
 	"checkEmojisAtOnce": "カスタム絵文字チェック機能で投稿をまとめる場合は true を入れる (まとめない場合は false)",
-	"mazeEnabled": "迷路の生成を無効化する場合は false を入れてください",
+	"mazeDisabled": "迷路の生成を無効にする場合は true を入れてください",
+	"pollDisabled": "アンケートを無効にする場合は true を入れてください",
 	"mecab": "/usr/bin/mecab",
 	"mecabDic": "/var/lib/mecab/dic/ipadic-utf8/",
 	"memoryDir": "data"
@@ -79,7 +81,7 @@ Misskey用の日本語Botです。
 制限モードが有効で、アカウントの設定がフォロー承認制になっている場合、フォロワーが0人のリモートユーザーからのフォローリクエストは自動で拒否し、それ以外のユーザーからのフォローリクエストは自動で承認します。
 
 ### キーワードを覚える機能
-より多くのキーワードを覚えられるために、仮名と英語の変換辞書を追加で利用することができます。
+より多くのキーワードを覚えるために、仮名と英語の変換辞書を追加で利用することができます。
 
 [Google日本語入力の和英辞書作成プロジェクト](https://github.com/KEINOS/google-ime-user-dictionary-ja-en) より [このディレクトリ](https://github.com/KEINOS/google-ime-user-dictionary-ja-en/tree/master/Google-ime-jp-%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A%E8%8B%B1%E8%AA%9E%E8%BE%9E%E5%85%B8) のテキストファイルを連結し、`google-ime-user-dictionary-ja-en.txt`という名前で藍のインストールディレクトリに配置してください。  
 （※`google-ime-jp-カタカナ英語辞書01-あ～お.txt`ファイルは連結から除外してください。）

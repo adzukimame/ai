@@ -97,11 +97,11 @@ promiseRetry(retry => {
 		new BirthdayModule(),
 		new ValentineModule(),
 		...(config.keywordEnabled ? [new KeywordModule()] : []),
-		...(config.mazeEnabled ? [new MazeModule()] : []),
+		...(config.mazeDisabled === true ? [] : [new MazeModule()]),
 		...(config.chartEnabled ? [new ChartModule()] : []),
 		new SleepReportModule(),
 		...(config.notingEnabled ? [new NotingModule()] : []),
-		...(config.pollEnabled ? [new PollModule()] : []),
+		...(config.pollDisabled === true ? [] : [new PollModule()]),
 		new ReminderModule(),
 		...(config.checkEmojisEnabled ? [new CheckCustomEmojisModule()] : [])
 	]);
