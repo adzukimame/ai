@@ -12,7 +12,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		if (config.mazeEnabled === false) return {};
+		if (config.mazeDisabled === true) return {};
 
 		this.post();
 		setInterval(this.post, 1000 * 60 * 3);
