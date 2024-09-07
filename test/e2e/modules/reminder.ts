@@ -14,7 +14,7 @@ describe('reminder モジュール', () => {
 		ai = await signup({});
 		user = await signup({});
 
-		Ai = new 藍(ai, [new ReminderModule()], generateConfig({ i: ai.token }));
+		new 藍(ai, [new ReminderModule()], generateConfig({ i: ai.token }));
 		await sleep(1000);
 	});
 
