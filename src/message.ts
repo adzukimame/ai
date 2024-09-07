@@ -103,6 +103,6 @@ export default class Message {
 
 	@bindThis
 	public or(words: (string | RegExp)[]): boolean {
-		return this.text ? or(this.text, words) : false;
+		return this.text ? or(this.extractedText, words) : false;
 	}
 }
