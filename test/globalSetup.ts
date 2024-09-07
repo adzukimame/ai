@@ -1,5 +1,3 @@
-import { beforeAll } from 'vitest';
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const api = async (endpoint: string, param: Record<string, any>, token?: string) => {
 	const url = new URL('http://localhost:3000');
@@ -25,7 +23,7 @@ const api = async (endpoint: string, param: Record<string, any>, token?: string)
 	});
 };
 
-beforeAll(async () => {
+export default async function setup() {
 	const meta = await api('meta', { detail: true });
 	const requireSetup: boolean = meta.requireSetup;
 
@@ -45,4 +43,4 @@ beforeAll(async () => {
 			rateLimitFactor: 0
 		}
 	}, adminToken);
-});
+};

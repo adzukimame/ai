@@ -7,7 +7,7 @@ export default defineConfig({
 		globals: true,
 		testTimeout: 30000,
 		hookTimeout: 15000,
-		setupFiles: './test/setup.ts'
+		globalSetup: ['./test/globalSetup.ts']
 	},
 	plugins: [tsConfigPaths()]
 });
