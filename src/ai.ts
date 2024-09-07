@@ -5,7 +5,7 @@ import { bindThis } from '@/decorators.js';
 import loki from 'lokijs';
 import { FormData, File } from 'formdata-node';
 import chalk from 'chalk';
-import { v4 as uuid } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import WebSocket from 'ws';
 import { api as misskeyApi, Stream } from 'misskey-js';
 import type { Endpoints as MisskeyApiEndpoints } from 'misskey-js';
@@ -479,7 +479,7 @@ export default class 藍 {
 	 */
 	@bindThis
 	public setTimeoutWithPersistence<C, TimerData>(module: Module<C, TimerData>, delay: number, data?: TimerData) {
-		const id = uuid();
+		const id = randomUUID();
 		this.timers.insertOne({
 			id: id,
 			module: module.name,
