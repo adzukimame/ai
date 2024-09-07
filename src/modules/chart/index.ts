@@ -5,7 +5,6 @@ import serifs from '@/serifs.js';
 import Message from '@/message.js';
 import { renderChart } from './render-chart.js';
 import { items } from '@/vocabulary.js';
-import config from '@/config.js';
 
 type ChartType = 'userNotes' | 'followers' | 'notes' | 'random';
 
@@ -14,7 +13,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		if (config.chartEnabled === false) return {};
+		if (this.ai.getConfig('chartEnabled') === false) return {};
 
 		this.post();
 		setInterval(this.post, 1000 * 60 * 3);

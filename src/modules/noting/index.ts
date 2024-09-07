@@ -2,14 +2,13 @@ import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
 import { genItem } from '@/vocabulary.js';
-import config from '@/config.js';
 
 export default class extends Module {
 	public readonly name = 'noting';
 
 	@bindThis
 	public install() {
-		if (config.notingEnabled === false) return {};
+		if (this.ai.getConfig('notingEnabled') === false) return {};
 
 		setInterval(() => {
 			if (Math.random() < 0.04) {

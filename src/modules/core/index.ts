@@ -49,9 +49,10 @@ export default class extends Module<ContextData, unknown> {
 	@bindThis
 	private transferEnd(msg: Message): boolean {
 		if (!msg.text) return false;
-		if (!msg.text.startsWith('「') || !msg.text.endsWith('」')) return false;
 
-		const code = msg.text.substring(1, msg.text.length - 1);
+		if (!msg.extractedText.startsWith('「') || !msg.extractedText.endsWith('」')) return false;
+
+		const code = msg.extractedText.substring(1, msg.extractedText.length - 1);
 
 		const succ = msg.friend.transferMemory(code);
 
@@ -67,10 +68,10 @@ export default class extends Module<ContextData, unknown> {
 	@bindThis
 	private setName(msg: Message): boolean {
 		if (!msg.text) return false;
-		if (!msg.text.includes('って呼んで')) return false;
-		if (msg.text.startsWith('って呼んで')) return false;
+		if (!msg.extractedText.includes('って呼んで')) return false;
+		if (msg.extractedText.startsWith('って呼んで')) return false;
 
-		const name = msg.text.match(/^(.+?)って呼んで/g)![1];
+		const name = msg.extractedText.match(/^(.+?)って呼んで/)![1];
 
 		if (name.length > 10) {
 			msg.reply(serifs.core.tooLong);

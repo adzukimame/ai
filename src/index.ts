@@ -104,7 +104,7 @@ promiseRetry(retry => {
 		...(config.pollDisabled === true ? [] : [new PollModule()]),
 		new ReminderModule(),
 		...(config.checkEmojisEnabled ? [new CheckCustomEmojisModule()] : [])
-	]);
+	], config);
 }).catch(_e => {
 	log(chalk.red('Failed to fetch the account'));
 });

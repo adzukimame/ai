@@ -6,7 +6,6 @@ import Friend from '@/friend.js';
 import type { Note, UserDetailed, DriveFile } from 'misskey-js/entities.js';
 import includes from '@/utils/includes.js';
 import or from '@/utils/or.js';
-import config from '@/config.js';
 import { sleep } from '@/utils/sleep.js';
 
 export default class Message {
@@ -41,7 +40,7 @@ export default class Message {
 	 * メンション部分を除いたテキスト本文
 	 */
 	public get extractedText(): string {
-		const host = new URL(config.host).host.replace(/\./g, '\\.');
+		const host = new URL(this.ai.getConfig('host')).host.replace(/\./g, '\\.');
 		return this.text
 			? this.text
 				.replace(new RegExp(`^@${this.ai.account.username}@${host}\\s`, 'i'), '')
@@ -81,7 +80,7 @@ export default class Message {
 
 		this.ai.log(`>>> Sending reply to ${chalk.underline(this.id)}`);
 
-		if (!opts?.immediate) {
+		if (!opts?.immediate && process.env.NODE_ENV !== 'test') {
 			await sleep(2000);
 		}
 
@@ -104,6 +103,6 @@ export default class Message {
 
 	@bindThis
 	public or(words: (string | RegExp)[]): boolean {
-		return this.text ? or(this.text, words) : false;
+		return this.text ? or(this.extractedText, words) : false;
 	}
 }

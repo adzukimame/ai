@@ -2,7 +2,6 @@ import { bindThis } from '@/decorators.js';
 import Message from '@/message.js';
 import Module from '@/module.js';
 import { genItem } from '@/vocabulary.js';
-import config from '@/config.js';
 import type { Note } from 'misskey-js/entities.js';
 
 type TimerData = {
@@ -95,7 +94,7 @@ export default class extends Module<unknown, TimerData> {
 
 	@bindThis
 	private async mentionHook(msg: Message) {
-		if (!msg.or(['/poll']) || msg.user.username !== config.master) {
+		if (!msg.or(['/poll']) || msg.user.username !== this.ai.getConfig('master')) {
 			return false;
 		} else {
 			this.log('Manualy poll requested');

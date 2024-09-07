@@ -2,7 +2,6 @@ import * as childProcess from 'child_process';
 import { bindThis } from '@/decorators.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
-import config from '@/config.js';
 import Message from '@/message.js';
 import Friend from '@/friend.js';
 import getDate from '@/utils/get-date.js';
@@ -43,6 +42,8 @@ export type ReversiMessage = {
 		game: ReversiGameDetailed;
 		form: Form;
 		account: MeDetailed;
+		host: string;
+		i: string;
 	};
 } | {
 	type: 'putStone';
@@ -62,7 +63,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		if (!config.reversiEnabled) return {};
+		if (!this.ai.getConfig('reversiEnabled')) return {};
 
 		this.reversiConnection = this.ai.connection.useChannel('reversi' as keyof Channels);
 
@@ -72,7 +73,7 @@ export default class extends Module {
 		// マッチしたとき
 		this.reversiConnection.on('matched', msg => this.onReversiGameStart(msg.game));
 
-		if (config.reversiEnabled) {
+		if (this.ai.getConfig('reversiEnabled')) {
 			const mainStream = this.ai.connection.useChannel('main');
 			mainStream.on('pageEvent', msg => {
 				if (msg.event === 'inviteReversi') {
@@ -91,7 +92,7 @@ export default class extends Module {
 	@bindThis
 	private async mentionHook(msg: Message) {
 		if (msg.includes(['リバーシ', 'オセロ', 'reversi', 'othello'])) {
-			if (config.reversiEnabled) {
+			if (this.ai.getConfig('reversiEnabled')) {
 				msg.reply(serifs.reversi.ok);
 
 				if (msg.includes(['接待'])) {
@@ -115,7 +116,7 @@ export default class extends Module {
 	private async onReversiInviteMe(inviter: UserLite) {
 		this.log(`Someone invited me: @${inviter.username}`);
 
-		if (config.reversiEnabled) {
+		if (this.ai.getConfig('reversiEnabled')) {
 			// 承認
 			const game = await this.ai.api('reversi/match', {
 				userId: inviter.id
@@ -181,7 +182,9 @@ export default class extends Module {
 			body: {
 				game: game,
 				form: form,
-				account: this.ai.account
+				account: this.ai.account,
+				host: this.ai.getConfig('host'),
+				i: this.ai.getConfig('i')
 			}
 		});
 

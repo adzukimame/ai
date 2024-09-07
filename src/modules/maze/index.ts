@@ -5,14 +5,13 @@ import serifs from '@/serifs.js';
 import { genMaze, MazeComplexity } from './gen-maze.js';
 import { renderMaze } from './render-maze.js';
 import Message from '@/message.js';
-import config from '@/config.js';
 
 export default class extends Module {
 	public readonly name = 'maze';
 
 	@bindThis
 	public install() {
-		if (config.mazeDisabled === true) return {};
+		if (this.ai.getConfig('mazeDisabled') === true) return {};
 
 		this.post();
 		setInterval(this.post, 1000 * 60 * 3);

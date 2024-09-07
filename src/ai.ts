@@ -11,7 +11,7 @@ import { api as misskeyApi, Stream } from 'misskey-js';
 import type { Endpoints as MisskeyApiEndpoints } from 'misskey-js';
 import type { MeDetailed, User, UserDetailed, Note, Notification, DriveFilesCreateResponse } from 'misskey-js/entities.js';
 
-import config from '@/config.js';
+import type { Config } from '@/config.js';
 import Module from '@/module.js';
 import type { ModuleDoc } from '@/module.js';
 import Message from '@/message.js';
@@ -47,6 +47,7 @@ export default class 藍 {
 	public account: MeDetailed;
 	public connection: Stream;
 	public modules: Module[] = [];
+	private config: Config;
 	private mentionHooks: MentionHook[] = [];
 	private contextHooks: { [moduleName: string]: ContextHook } = {};
 	private timeoutCallbacks: { [moduleName: string]: TimeoutCallback } = {};
@@ -81,9 +82,10 @@ export default class 藍 {
 	 * @param modules モジュール。先頭のモジュールほど高優先度
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	constructor(account: MeDetailed, modules: Module<any, any>[]) {
+	constructor(account: MeDetailed, modules: Module<any, any>[], config: Config) {
 		this.account = account;
 		this.modules = modules;
+		this.config = config;
 
 		this.apiClient = new misskeyApi.APIClient({
 			origin: config.host,
@@ -99,6 +101,7 @@ export default class 藍 {
 		this.log(`Lodaing the memory from ${file}...`);
 
 		this.db = new loki(file, {
+			persistenceMethod: process.env.NODE_ENV !== 'test' ? 'fs' : 'memory',
 			autoload: true,
 			autosave: true,
 			autosaveInterval: 1000,
@@ -144,7 +147,7 @@ export default class 藍 {
 		this.lastSleepedAt = meta.lastWakingAt;
 
 		// Init stream
-		this.connection = new Stream(config.host, { token: config.i }, { WebSocket: WebSocket });
+		this.connection = new Stream(this.getConfig('host'), { token: this.getConfig('i') }, { WebSocket: WebSocket });
 
 		// start heartbeat
 		setInterval(this.connection.heartbeat, 1000 * 60);
@@ -180,7 +183,7 @@ export default class 藍 {
 				return;
 			}
 
-			if (config.restrictCommunication && data.user.host != null) {
+			if (this.getConfig('restrictCommunication') && data.user.host != null) {
 				return;
 			}
 
@@ -233,7 +236,7 @@ export default class 藍 {
 		}
 
 		// コミュニケーション対象の制限が有効
-		if (config.restrictCommunication) {
+		if (this.getConfig('restrictCommunication')) {
 			// フォロワー0のリモートユーザー
 			if (msg.user.host != null && msg.friend.doc.user.followersCount === 0) {
 				return;
@@ -282,7 +285,7 @@ export default class 藍 {
 		}
 		//#endregion
 
-		if (!immediate) {
+		if (!immediate && process.env.NODE_ENV !== 'test') {
 			await sleep(1000);
 		}
 
@@ -311,7 +314,7 @@ export default class 藍 {
 			case 'receiveFollowRequest': {
 				if (notification.user.isBot) break;
 
-				if (config.restrictCommunication) {
+				if (this.getConfig('restrictCommunication')) {
 					this.api('users/show', { userId: notification.user.id }).then(_user => {
 						const user = _user as UserDetailed;
 
@@ -386,10 +389,10 @@ export default class 藍 {
 	@bindThis
 	public async upload(file: Buffer | fs.ReadStream, meta: { filename: string; contentType: string }): Promise<DriveFilesCreateResponse> {
 		const form = new FormData();
-		form.set('i', config.i);
+		form.set('i', this.getConfig('i'));
 		form.set('file', new File([file], meta.filename, { type: meta.contentType }));
 
-		return fetch(`${config.apiUrl}/drive/files/create`, {
+		return fetch(`${this.getConfig('apiUrl')}/drive/files/create`, {
 			method: 'POST',
 			body: form
 		}).then(res => {
@@ -514,5 +517,10 @@ export default class 藍 {
 		};
 
 		this.meta.update(newMeta);
+	}
+
+	@bindThis
+	public getConfig<E extends keyof Config>(key: E): Config[E] {
+		return this.config[key];
 	}
 }

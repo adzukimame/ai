@@ -28,7 +28,7 @@ export default class extends Module {
 		if (note.userId === this.ai.account.id) return; // 自分自身はreject
 
 		const react = async (reaction: string, immediate = false) => {
-			if (!immediate) {
+			if (!immediate && process.env.NODE_ENV !== 'test') {
 				await sleep(1500);
 			}
 			this.ai.api('notes/reactions/create', {

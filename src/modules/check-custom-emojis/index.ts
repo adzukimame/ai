@@ -3,7 +3,6 @@ import loki from 'lokijs';
 import type { AdminEmojiListResponse } from 'misskey-js/entities.js';
 import Module from '@/module.js';
 import serifs from '@/serifs.js';
-import config from '@/config.js';
 import Message from '@/message.js';
 
 export default class extends Module {
@@ -16,7 +15,7 @@ export default class extends Module {
 
 	@bindThis
 	public install() {
-		if (!config.checkEmojisEnabled) return {};
+		if (!this.ai.getConfig('checkEmojisEnabled')) return {};
 		this.lastEmoji = this.ai.getCollection('lastEmoji', {
 			indices: ['id']
 		});
@@ -59,11 +58,11 @@ export default class extends Module {
 		const emojiSize = emojisData.length;
 		this.lastEmoji.remove(lastEmoji);
 
-		const server_name = config.serverName ? config.serverName : 'このサーバー';
+		const server_name = this.ai.getConfig('serverName') ?? 'このサーバー';
 		this.log('Posting...');
 
 		// 一気に投稿しないver
-		if (!config.checkEmojisAtOnce) {
+		if (!this.ai.getConfig('checkEmojisAtOnce')) {
 			// 概要について投稿
 			this.log(serifs.checkCustomEmojis.post(server_name, emojiSize));
 			await this.ai.post({
