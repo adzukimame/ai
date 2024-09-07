@@ -267,10 +267,10 @@ class Session {
 	 * 打たれたとき
 	 */
 	private onLog = (log: Parameters<Channels['reversiGame']['events']['log']>[0]) => {
-		if (log.id == null || !this.appliedOps.includes(log.id)) {
+		if (log.id == null || !this.appliedOps.includes(log.id as string)) {
 			switch (log.operation) {
 				case 'put': {
-					this.engine.putStone(log.pos);
+					this.engine.putStone(log.pos as number);
 					this.currentTurn++;
 
 					if (this.engine.turn === this.botColor) {
