@@ -147,7 +147,7 @@ export default class 藍 {
 		this.lastSleepedAt = meta.lastWakingAt;
 
 		// Init stream
-		this.connection = new Stream(this.getConfig('host'), { token: this.getConfig('i') }, { WebSocket: WebSocket });
+		this.connection = new Stream(this.getConfig('host'), { token: this.getConfig('i') }, { WebSocket: WebSocket as unknown as Exclude<ConstructorParameters<typeof Stream>[2], undefined>['WebSocket'] });
 
 		// start heartbeat
 		setInterval(this.connection.heartbeat, 1000 * 60);

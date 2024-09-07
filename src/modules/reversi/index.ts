@@ -68,10 +68,10 @@ export default class extends Module {
 		this.reversiConnection = this.ai.connection.useChannel('reversi' as keyof Channels);
 
 		// 招待されたとき
-		this.reversiConnection.on('invited', msg => this.onReversiInviteMe(msg.user));
+		this.reversiConnection.on('invited' as keyof Channels[keyof Channels]['events'], (msg: { user: UserLite }) => this.onReversiInviteMe(msg.user));
 
 		// マッチしたとき
-		this.reversiConnection.on('matched', msg => this.onReversiGameStart(msg.game));
+		this.reversiConnection.on('matched' as keyof Channels[keyof Channels]['events'], (msg: { game: ReversiMatchResponse }) => this.onReversiGameStart(msg.game));
 
 		if (this.ai.getConfig('reversiEnabled')) {
 			const mainStream = this.ai.connection.useChannel('main');
