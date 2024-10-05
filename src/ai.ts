@@ -150,7 +150,7 @@ export default class 藍 {
 		this.connection = new Stream(this.getConfig('host'), { token: this.getConfig('i') }, { WebSocket: WebSocket as unknown as Exclude<ConstructorParameters<typeof Stream>[2], undefined>['WebSocket'] });
 
 		// start heartbeat
-		setInterval(this.connection.heartbeat, 1000 * 60);
+		setInterval(() => this.connection.heartbeat(), 1000 * 60);
 
 		//#region Main stream
 		const mainStream = this.connection.useChannel('main');
