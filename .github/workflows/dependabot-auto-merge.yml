@@ -4,10 +4,6 @@ on:
     branches:
       - develop-mame
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   dependabot-auto-merge:
     runs-on: ubuntu-latest
@@ -20,9 +16,16 @@ jobs:
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Enable auto-merge
+      - name: Enable auto-merge (semver-patch)
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.PAT_FOR_DEPENDABOT_AUTO_MERGE }}
+      - name: Enable auto-merge (semver-minor)
         if: steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_FOR_DEPENDABOT_AUTO_MERGE }}
+
